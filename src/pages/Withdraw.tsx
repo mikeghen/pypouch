@@ -4,10 +4,16 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { TransactionButton } from "@/components/TransactionButton";
 
 const Withdraw = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { writeContract, data: hash, isPending } = useWriteContract();
+  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
+    hash,
+  });
 
   const handleWithdraw = (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,9 +65,14 @@ const Withdraw = () => {
                 required
               />
             </div>
-            <Button type="submit" className="w-full">
-              Withdraw
-            </Button>
+            <TransactionButton
+              onClick={handleWithdraw}
+              hash={hash}
+              isPending={isPending}
+              isConfirming={isConfirming}
+              isSuccess={isSuccess}
+              action="Withdraw"
+            />
           </form>
         </Card>
       </div>

@@ -16,6 +16,7 @@ import { useAccount, useBalance, useWriteContract, useWaitForTransactionReceipt 
 import { parseUnits } from 'viem';
 import { PYUSD_ADDRESS, PYUSD_ABI } from "@/config/wagmi";
 import { mainnet } from 'wagmi/chains';
+import { TransactionButton } from "@/components/TransactionButton";
 
 const Send = () => {
   const navigate = useNavigate();
@@ -55,7 +56,7 @@ const Send = () => {
 
     try {
       console.log('[Send] Converting amount to units');
-      const value = parseUnits(amount, 6); // PYUSD has 6 decimals
+      const value = parseUnits(amount, 6);
       console.log('[Send] Parsed amount:', value.toString());
 
       console.log('[Send] Calling transfer contract');
@@ -81,14 +82,6 @@ const Send = () => {
       });
     }
   };
-
-  // Show success message when transaction is confirmed
-  if (isSuccess) {
-    toast({
-      title: "Success",
-      description: "PYUSD sent successfully!",
-    });
-  }
 
   const handleScan = (data: { text: string } | null) => {
     console.log('[Send] QR scan result:', data);
@@ -170,15 +163,15 @@ const Send = () => {
                 </p>
               )}
             </div>
-            <Button 
-              type="submit" 
-              className="w-full"
-              disabled={isPending || isConfirming}
-            >
-              {isPending ? 'Confirm in Wallet...' : 
-               isConfirming ? 'Processing...' : 
-               'Send'}
-            </Button>
+            <TransactionButton
+              onClick={handleSend}
+              hash={hash}
+              isPending={isPending}
+              isConfirming={isConfirming}
+              isSuccess={isSuccess}
+              action="Send"
+              disabled={!address}
+            />
           </form>
         </Card>
       </div>
