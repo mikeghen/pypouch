@@ -12,8 +12,7 @@ const Index = () => {
   const { address } = useAccount();
   const { data: balance } = useBalance({
     address,
-    token: PYUSD_ADDRESS,
-    watch: true,
+    token: PYUSD_ADDRESS
   });
 
   return (

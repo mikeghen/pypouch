@@ -47,8 +47,8 @@ const Send = () => {
     try {
       const value = parseUnits(amount, 6); // PYUSD has 6 decimals
       writeContract({
-        address: PYUSD_ADDRESS,
         abi: PYUSD_ABI,
+        address: PYUSD_ADDRESS,
         functionName: 'transfer',
         args: [recipientAddress, value],
       });
