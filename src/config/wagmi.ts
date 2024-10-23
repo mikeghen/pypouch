@@ -3,7 +3,7 @@ import { mainnet } from 'wagmi/chains';
 
 export const wagmiConfig = getDefaultConfig({
   appName: 'PYUSD Pouch',
-  projectId: 'YOUR_PROJECT_ID', // You'll need to get this from WalletConnect
+  projectId: "21fef48091f12692cad574a6f7753643",
   chains: [mainnet],
   ssr: false,
 });

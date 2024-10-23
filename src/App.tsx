@@ -16,9 +16,9 @@ import Receive from "./pages/Receive";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <WagmiConfig config={wagmiConfig}>
-    <RainbowKitProvider>
-      <QueryClientProvider client={queryClient}>
+  <QueryClientProvider client={queryClient}>
+    <WagmiConfig config={wagmiConfig}>
+      <RainbowKitProvider>
         <TooltipProvider>
           <Toaster />
           <BrowserRouter>
@@ -31,9 +31,9 @@ const App = () => (
             </Routes>
           </BrowserRouter>
         </TooltipProvider>
-      </QueryClientProvider>
-    </RainbowKitProvider>
-  </WagmiConfig>
+      </RainbowKitProvider>
+    </WagmiConfig>
+  </QueryClientProvider>
 );
 
 export default App;
