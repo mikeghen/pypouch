@@ -111,28 +111,28 @@ const TransactionHistory = () => {
           className="flex items-center gap-2"
         >
           <DownloadIcon className="h-4 w-4" />
-          Download CSV
+          <span className="hidden sm:inline">Download CSV</span>
         </Button>
       </div>
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Amount (PYUSD)</TableHead>
-              <TableHead>Balance (PYUSD)</TableHead>
+              <TableHead className="w-[90px]">Date</TableHead>
+              <TableHead className="w-[80px]">Type</TableHead>
+              <TableHead className="w-[100px] text-right">Amount</TableHead>
+              <TableHead className="w-[100px] text-right">Balance</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {calculateRunningBalance().map((tx) => (
               <TableRow key={tx.id}>
-                <TableCell>{tx.date}</TableCell>
-                <TableCell>{tx.type}</TableCell>
-                <TableCell className={tx.amount.startsWith("+") ? "text-green-600" : "text-red-600"}>
+                <TableCell className="whitespace-nowrap">{tx.date}</TableCell>
+                <TableCell className="whitespace-nowrap">{tx.type}</TableCell>
+                <TableCell className={`text-right whitespace-nowrap ${tx.amount.startsWith("+") ? "text-green-600" : "text-red-600"}`}>
                   {tx.amount}
                 </TableCell>
-                <TableCell>{tx.balance}</TableCell>
+                <TableCell className="text-right whitespace-nowrap">{tx.balance}</TableCell>
               </TableRow>
             ))}
           </TableBody>
