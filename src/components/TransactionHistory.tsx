@@ -7,6 +7,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { DownloadIcon } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 const transactions = [
   {
@@ -68,9 +71,51 @@ const transactions = [
 ];
 
 const TransactionHistory = () => {
+  const { toast } = useToast();
+
+  const downloadCSV = () => {
+    // Create CSV content
+    const headers = ['Date', 'Type', 'Amount (PYUSD)', 'Status'];
+    const csvContent = [
+      headers.join(','),
+      ...transactions.map(tx => [
+        tx.date,
+        tx.type,
+        tx.amount,
+        tx.status
+      ].join(','))
+    ].join('\n');
+
+    // Create and trigger download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `transaction-history-${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast({
+      title: "Download started",
+      description: "Your transaction history is being downloaded",
+    });
+  };
+
   return (
     <Card className="p-4">
-      <h2 className="text-xl font-semibold mb-4">Transaction History</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">Transaction History</h2>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={downloadCSV}
+          className="flex items-center gap-2"
+        >
+          <DownloadIcon className="h-4 w-4" />
+          Download CSV
+        </Button>
+      </div>
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
