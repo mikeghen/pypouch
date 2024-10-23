@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { TransactionButton } from "@/components/TransactionButton";
+import { pyusdContractConfig } from "@/config/contracts";
+import { parseUnits } from 'viem';
 
 const Withdraw = () => {
   const navigate = useNavigate();
@@ -25,11 +27,12 @@ const Withdraw = () => {
     
     try {
       console.log('[Withdraw] Attempting to execute withdrawal');
-      // Future withdrawal implementation will go here
-      toast({
-        title: "Withdrawal initiated",
-        description: "This feature will be implemented soon.",
+      writeContract({
+        ...pyusdContractConfig,
+        functionName: 'transfer',
+        args: [pyusdContractConfig.address, parseUnits('0', 6)], // Example withdrawal, adjust as needed
       });
+      
       console.log('[Withdraw] Withdrawal toast notification shown');
     } catch (error) {
       console.error('[Withdraw] Error during withdrawal:', error);

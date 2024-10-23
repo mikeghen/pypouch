@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/dialog";
 import { useAccount, useBalance, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseUnits } from 'viem';
-import { PYUSD_ADDRESS, PYUSD_ABI } from "@/config/wagmi";
-import { mainnet } from 'wagmi/chains';
+import { PYUSD_ADDRESS } from "@/config/wagmi";
+import { pyusdContractConfig } from "@/config/contracts";
 import { TransactionButton } from "@/components/TransactionButton";
 
 const Send = () => {
@@ -65,12 +65,9 @@ const Send = () => {
 
       console.log('[Send] Calling transfer contract');
       writeContract({
-        abi: PYUSD_ABI,
-        address: PYUSD_ADDRESS,
+        ...pyusdContractConfig,
         functionName: 'transfer',
         args: [recipientAddress, value],
-        chain: mainnet,
-        account: address,
       });
       
       console.log('[Send] Transfer contract call successful');

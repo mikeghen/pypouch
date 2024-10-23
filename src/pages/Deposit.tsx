@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { TransactionButton } from "@/components/TransactionButton";
+import { pyusdContractConfig } from "@/config/contracts";
 
 const Deposit = () => {
   const navigate = useNavigate();
@@ -25,11 +26,12 @@ const Deposit = () => {
     
     try {
       console.log('[Deposit] Attempting to execute deposit');
-      // Future deposit implementation will go here
-      toast({
-        title: "Deposit initiated",
-        description: "This feature will be implemented soon.",
+      writeContract({
+        ...pyusdContractConfig,
+        functionName: 'transfer',
+        args: [pyusdContractConfig.address, parseUnits('0', 6)], // Example deposit, adjust as needed
       });
+      
       console.log('[Deposit] Deposit toast notification shown');
     } catch (error) {
       console.error('[Deposit] Error during deposit:', error);
