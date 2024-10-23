@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useAccount, useBalance, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useBalance, useWriteContract, useWaitForTransactionReceipt, useChainId } from 'wagmi';
 import { parseUnits } from 'viem';
 import { PYUSD_ADDRESS } from "@/config/wagmi";
 import { pyusdContractConfig } from "@/config/contracts";
@@ -25,6 +25,7 @@ const Send = () => {
   const [recipientAddress, setRecipientAddress] = useState("");
   const [amount, setAmount] = useState("");
   const { address } = useAccount();
+  const chainId = useChainId();
   const { data: balance } = useBalance({
     address,
     token: PYUSD_ADDRESS
@@ -67,6 +68,8 @@ const Send = () => {
         ...pyusdContractConfig,
         functionName: 'transfer',
         args: [recipientAddress as `0x${string}`, value],
+        chain: chainId,
+        account: address,
       });
       
       console.log('[Send] Transfer contract call successful');
