@@ -17,76 +17,74 @@ const transactions = [
     date: "2024-02-20",
     type: "Interest",
     amount: "+0.12",
-    status: "Completed",
   },
   {
     id: 2,
     date: "2024-02-20",
     type: "Deposit",
     amount: "+500.00",
-    status: "Completed",
   },
   {
     id: 3,
     date: "2024-02-19",
     type: "Interest",
     amount: "+0.11",
-    status: "Completed",
   },
   {
     id: 4,
     date: "2024-02-19",
     type: "Send",
     amount: "-200.00",
-    status: "Completed",
   },
   {
     id: 5,
     date: "2024-02-18",
     type: "Interest",
     amount: "+0.09",
-    status: "Completed",
   },
   {
     id: 6,
     date: "2024-02-18",
     type: "Receive",
     amount: "+300.00",
-    status: "Completed",
   },
   {
     id: 7,
     date: "2024-02-17",
     type: "Interest",
     amount: "+0.08",
-    status: "Completed",
   },
   {
     id: 8,
     date: "2024-02-17",
     type: "Withdraw",
     amount: "-150.00",
-    status: "Completed",
   },
 ];
 
 const TransactionHistory = () => {
   const { toast } = useToast();
 
+  const calculateRunningBalance = () => {
+    let balance = 0;
+    return transactions.map(tx => {
+      balance += parseFloat(tx.amount);
+      return { ...tx, balance: balance.toFixed(2) };
+    }).reverse(); // Show most recent first
+  };
+
   const downloadCSV = () => {
-    // Create CSV content
-    const headers = ['Date', 'Type', 'Amount (PYUSD)', 'Status'];
+    const headers = ['Date', 'Type', 'Amount (PYUSD)', 'Balance (PYUSD)'];
     const csvContent = [
       headers.join(','),
-      ...transactions.map(tx => [
+      ...calculateRunningBalance().map(tx => [
         tx.date,
         tx.type,
         tx.amount,
-        tx.status
+        tx.balance
       ].join(','))
     ].join('\n');
 
-    // Create and trigger download
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
@@ -123,18 +121,18 @@ const TransactionHistory = () => {
               <TableHead>Date</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Amount (PYUSD)</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>Balance (PYUSD)</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {transactions.map((tx) => (
+            {calculateRunningBalance().map((tx) => (
               <TableRow key={tx.id}>
                 <TableCell>{tx.date}</TableCell>
                 <TableCell>{tx.type}</TableCell>
                 <TableCell className={tx.amount.startsWith("+") ? "text-green-600" : "text-red-600"}>
                   {tx.amount}
                 </TableCell>
-                <TableCell>{tx.status}</TableCell>
+                <TableCell>{tx.balance}</TableCell>
               </TableRow>
             ))}
           </TableBody>
