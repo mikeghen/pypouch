@@ -2,17 +2,10 @@ import { ArrowDownIcon, ArrowUpIcon, SendIcon, DownloadIcon } from "lucide-react
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import TransactionHistory from "@/components/TransactionHistory";
-import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
-  const { toast } = useToast();
-
-  const handleAction = (action: string) => {
-    toast({
-      title: `${action} PYUSD`,
-      description: "This feature will be implemented soon.",
-    });
-  };
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
@@ -30,7 +23,7 @@ const Index = () => {
         {/* Action Buttons */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Button
-            onClick={() => handleAction("Deposit")}
+            onClick={() => navigate("/deposit")}
             className="flex flex-col items-center gap-2 h-auto py-4"
             variant="outline"
           >
@@ -38,7 +31,7 @@ const Index = () => {
             <span>Deposit</span>
           </Button>
           <Button
-            onClick={() => handleAction("Withdraw")}
+            onClick={() => navigate("/withdraw")}
             className="flex flex-col items-center gap-2 h-auto py-4"
             variant="outline"
           >
@@ -46,7 +39,7 @@ const Index = () => {
             <span>Withdraw</span>
           </Button>
           <Button
-            onClick={() => handleAction("Send")}
+            onClick={() => navigate("/send")}
             className="flex flex-col items-center gap-2 h-auto py-4"
             variant="outline"
           >
@@ -54,7 +47,7 @@ const Index = () => {
             <span>Send</span>
           </Button>
           <Button
-            onClick={() => handleAction("Receive")}
+            onClick={() => navigate("/receive")}
             className="flex flex-col items-center gap-2 h-auto py-4"
             variant="outline"
           >
