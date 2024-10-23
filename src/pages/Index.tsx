@@ -1,4 +1,4 @@
-import { ArrowDownIcon, ArrowUpIcon, SendIcon, DownloadIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, SendIcon, DownloadIcon, WalletIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import TransactionHistory from "@/components/TransactionHistory";
@@ -18,7 +18,11 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-3xl mx-auto space-y-6">
-        <div className="flex justify-end">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <WalletIcon className="h-6 w-6 text-primary" />
+            <span className="text-xl font-bold text-primary">PyPouch</span>
+          </div>
           <WalletConnect />
         </div>
 
