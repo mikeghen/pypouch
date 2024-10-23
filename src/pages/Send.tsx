@@ -36,8 +36,7 @@ const Send = () => {
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await handleSend();
+    e.preventDefault(); // Prevent form submission
   };
 
   const handleSend = async () => {
@@ -67,7 +66,7 @@ const Send = () => {
       writeContract({
         ...pyusdContractConfig,
         functionName: 'transfer',
-        args: [recipientAddress, value],
+        args: [recipientAddress as `0x${string}`, value],
       });
       
       console.log('[Send] Transfer contract call successful');
