@@ -11,10 +11,24 @@ const Deposit = () => {
 
   const handleDeposit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Deposit initiated",
-      description: "This feature will be implemented soon.",
-    });
+    console.log('[Deposit] Initiating deposit transaction');
+    
+    try {
+      console.log('[Deposit] Attempting to execute deposit');
+      // Future deposit implementation will go here
+      toast({
+        title: "Deposit initiated",
+        description: "This feature will be implemented soon.",
+      });
+      console.log('[Deposit] Deposit toast notification shown');
+    } catch (error) {
+      console.error('[Deposit] Error during deposit:', error);
+      toast({
+        title: "Deposit failed",
+        description: "An error occurred during deposit.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

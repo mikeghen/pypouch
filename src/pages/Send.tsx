@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useAccount, useBalance, useWriteContract, useWaitForTransactionReceipt, useChainId } from 'wagmi';
+import { useAccount, useBalance, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseUnits } from 'viem';
 import { PYUSD_ADDRESS, PYUSD_ABI } from "@/config/wagmi";
 import { mainnet } from 'wagmi/chains';
@@ -24,7 +24,6 @@ const Send = () => {
   const [recipientAddress, setRecipientAddress] = useState("");
   const [amount, setAmount] = useState("");
   const { address } = useAccount();
-  const chainId = useChainId();
   const { data: balance } = useBalance({
     address,
     token: PYUSD_ADDRESS,
@@ -37,7 +36,15 @@ const Send = () => {
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('[Send] Initiating send transaction', {
+      from: address,
+      to: recipientAddress,
+      amount,
+      balance: balance?.formatted
+    });
+
     if (!address) {
+      console.error('[Send] Wallet not connected');
       toast({
         title: "Error",
         description: "Please connect your wallet first",
@@ -47,7 +54,11 @@ const Send = () => {
     }
 
     try {
+      console.log('[Send] Converting amount to units');
       const value = parseUnits(amount, 6); // PYUSD has 6 decimals
+      console.log('[Send] Parsed amount:', value.toString());
+
+      console.log('[Send] Calling transfer contract');
       writeContract({
         abi: PYUSD_ABI,
         address: PYUSD_ADDRESS,
@@ -56,7 +67,10 @@ const Send = () => {
         account: address,
         chain: mainnet
       });
+      
+      console.log('[Send] Transfer contract call successful');
     } catch (error) {
+      console.error('[Send] Error during send:', error);
       toast({
         title: "Error",
         description: "Failed to send PYUSD",
@@ -66,9 +80,11 @@ const Send = () => {
   };
 
   const handleScan = (data: { text: string } | null) => {
+    console.log('[Send] QR scan result:', data);
     if (data) {
       setRecipientAddress(data.text);
       setShowScanner(false);
+      console.log('[Send] Address set from QR:', data.text);
       toast({
         title: "Address scanned",
         description: "QR code successfully scanned",
@@ -77,7 +93,7 @@ const Send = () => {
   };
 
   const handleError = (err: any) => {
-    console.error(err);
+    console.error('[Send] QR scan error:', err);
     toast({
       title: "Scan failed",
       description: "Failed to scan QR code. Please try again.",

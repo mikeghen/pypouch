@@ -16,16 +16,26 @@ const Receive = () => {
   const { address } = useAccount();
 
   const handleCopy = async () => {
-    if (!address) return;
+    console.log('[Receive] Attempting to copy address:', address);
+    if (!address) {
+      console.warn('[Receive] No address available to copy');
+      return;
+    }
+    
     try {
       await navigator.clipboard.writeText(address);
+      console.log('[Receive] Address copied successfully');
       setCopied(true);
       toast({
         title: "Address copied",
         description: "Wallet address copied to clipboard",
       });
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => {
+        console.log('[Receive] Resetting copy state');
+        setCopied(false)
+      }, 2000);
     } catch (err) {
+      console.error('[Receive] Failed to copy address:', err);
       toast({
         title: "Failed to copy",
         description: "Please try copying manually",

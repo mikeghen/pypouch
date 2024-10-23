@@ -11,10 +11,24 @@ const Withdraw = () => {
 
   const handleWithdraw = (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Withdrawal initiated",
-      description: "This feature will be implemented soon.",
-    });
+    console.log('[Withdraw] Initiating withdrawal transaction');
+    
+    try {
+      console.log('[Withdraw] Attempting to execute withdrawal');
+      // Future withdrawal implementation will go here
+      toast({
+        title: "Withdrawal initiated",
+        description: "This feature will be implemented soon.",
+      });
+      console.log('[Withdraw] Withdrawal toast notification shown');
+    } catch (error) {
+      console.error('[Withdraw] Error during withdrawal:', error);
+      toast({
+        title: "Withdrawal failed",
+        description: "An error occurred during withdrawal.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
