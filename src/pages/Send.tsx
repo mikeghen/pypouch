@@ -15,6 +15,7 @@ import {
 import { useAccount, useBalance, useWriteContract, useWaitForTransactionReceipt, useChainId } from 'wagmi';
 import { parseUnits } from 'viem';
 import { PYUSD_ADDRESS, PYUSD_ABI } from "@/config/wagmi";
+import { mainnet } from 'wagmi/chains';
 
 const Send = () => {
   const navigate = useNavigate();
@@ -53,7 +54,7 @@ const Send = () => {
         functionName: 'transfer',
         args: [recipientAddress, value],
         account: address,
-        chain: { id: chainId }
+        chain: mainnet
       });
     } catch (error) {
       toast({
