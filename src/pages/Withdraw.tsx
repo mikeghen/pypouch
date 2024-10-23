@@ -15,8 +15,12 @@ const Withdraw = () => {
     hash,
   });
 
-  const handleWithdraw = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    handleWithdraw();
+  };
+
+  const handleWithdraw = () => {
     console.log('[Withdraw] Initiating withdrawal transaction');
     
     try {
@@ -51,7 +55,7 @@ const Withdraw = () => {
         
         <Card className="p-6">
           <h2 className="text-2xl font-bold mb-6">Withdraw PYUSD</h2>
-          <form onSubmit={handleWithdraw} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="amount" className="text-sm font-medium">
                 Amount (PYUSD)

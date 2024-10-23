@@ -27,16 +27,20 @@ const Send = () => {
   const { address } = useAccount();
   const { data: balance } = useBalance({
     address,
-    token: PYUSD_ADDRESS,
+    token: PYUSD_ADDRESS
   });
 
-  const { writeContract, data: hash, isPending, error: writeError } = useWriteContract();
+  const { writeContract, data: hash, isPending } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
   });
 
-  const handleSend = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    await handleSend();
+  };
+
+  const handleSend = async () => {
     console.log('[Send] Initiating send transaction', {
       from: address,
       to: recipientAddress,
@@ -60,19 +64,16 @@ const Send = () => {
       console.log('[Send] Parsed amount:', value.toString());
 
       console.log('[Send] Calling transfer contract');
-      await writeContract({
+      writeContract({
         abi: PYUSD_ABI,
         address: PYUSD_ADDRESS,
         functionName: 'transfer',
         args: [recipientAddress, value],
         chain: mainnet,
+        account: address,
       });
       
       console.log('[Send] Transfer contract call successful');
-      
-      if (writeError) {
-        throw writeError;
-      }
     } catch (error) {
       console.error('[Send] Error during send:', error);
       toast({
@@ -119,7 +120,7 @@ const Send = () => {
         
         <Card className="p-6">
           <h2 className="text-2xl font-bold mb-6">Send PYUSD</h2>
-          <form onSubmit={handleSend} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="recipient" className="text-sm font-medium">
                 Recipient Address

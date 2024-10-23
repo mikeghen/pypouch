@@ -15,8 +15,12 @@ const Deposit = () => {
     hash,
   });
 
-  const handleDeposit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    handleDeposit();
+  };
+
+  const handleDeposit = () => {
     console.log('[Deposit] Initiating deposit transaction');
     
     try {
@@ -51,7 +55,7 @@ const Deposit = () => {
         
         <Card className="p-6">
           <h2 className="text-2xl font-bold mb-6">Deposit PYUSD</h2>
-          <form onSubmit={handleDeposit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="amount" className="text-sm font-medium">
                 Amount (PYUSD)
