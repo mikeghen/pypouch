@@ -29,7 +29,7 @@ const Send = () => {
     token: PYUSD_ADDRESS,
   });
 
-  const { writeContract, data: hash, isPending } = useWriteContract();
+  const { writeContract, data: hash, isPending, error: writeError } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
   });
@@ -59,16 +59,19 @@ const Send = () => {
       console.log('[Send] Parsed amount:', value.toString());
 
       console.log('[Send] Calling transfer contract');
-      writeContract({
+      await writeContract({
         abi: PYUSD_ABI,
         address: PYUSD_ADDRESS,
         functionName: 'transfer',
         args: [recipientAddress, value],
-        account: address,
-        chain: mainnet
+        chain: mainnet,
       });
       
       console.log('[Send] Transfer contract call successful');
+      
+      if (writeError) {
+        throw writeError;
+      }
     } catch (error) {
       console.error('[Send] Error during send:', error);
       toast({
@@ -78,6 +81,14 @@ const Send = () => {
       });
     }
   };
+
+  // Show success message when transaction is confirmed
+  if (isSuccess) {
+    toast({
+      title: "Success",
+      description: "PYUSD sent successfully!",
+    });
+  }
 
   const handleScan = (data: { text: string } | null) => {
     console.log('[Send] QR scan result:', data);
@@ -164,7 +175,7 @@ const Send = () => {
               className="w-full"
               disabled={isPending || isConfirming}
             >
-              {isPending ? 'Confirming...' : 
+              {isPending ? 'Confirm in Wallet...' : 
                isConfirming ? 'Processing...' : 
                'Send'}
             </Button>
