@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useAccount, useBalance, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useBalance, useWriteContract, useWaitForTransactionReceipt, useChainId } from 'wagmi';
 import { parseUnits } from 'viem';
 import { PYUSD_ADDRESS, PYUSD_ABI } from "@/config/wagmi";
 
@@ -23,6 +23,7 @@ const Send = () => {
   const [recipientAddress, setRecipientAddress] = useState("");
   const [amount, setAmount] = useState("");
   const { address } = useAccount();
+  const chainId = useChainId();
   const { data: balance } = useBalance({
     address,
     token: PYUSD_ADDRESS,
@@ -51,6 +52,8 @@ const Send = () => {
         address: PYUSD_ADDRESS,
         functionName: 'transfer',
         args: [recipientAddress, value],
+        account: address,
+        chain: { id: chainId }
       });
     } catch (error) {
       toast({
