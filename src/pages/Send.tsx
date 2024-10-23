@@ -12,19 +12,53 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useAccount, useBalance, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { parseUnits } from 'viem';
+import { PYUSD_ADDRESS, PYUSD_ABI } from "@/config/wagmi";
 
 const Send = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showScanner, setShowScanner] = useState(false);
   const [recipientAddress, setRecipientAddress] = useState("");
+  const [amount, setAmount] = useState("");
+  const { address } = useAccount();
+  const { data: balance } = useBalance({
+    address,
+    token: PYUSD_ADDRESS,
+  });
 
-  const handleSend = (e: React.FormEvent) => {
+  const { writeContract, data: hash, isPending } = useWriteContract();
+  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
+    hash,
+  });
+
+  const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Transfer initiated",
-      description: "This feature will be implemented soon.",
-    });
+    if (!address) {
+      toast({
+        title: "Error",
+        description: "Please connect your wallet first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const value = parseUnits(amount, 6); // PYUSD has 6 decimals
+      writeContract({
+        address: PYUSD_ADDRESS,
+        abi: PYUSD_ABI,
+        functionName: 'transfer',
+        args: [recipientAddress, value],
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send PYUSD",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleScan = (data: { text: string } | null) => {
@@ -94,12 +128,25 @@ const Send = () => {
                 type="number"
                 placeholder="Enter amount"
                 min="0"
-                step="0.01"
+                step="0.000001"
                 required
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
               />
+              {balance && (
+                <p className="text-sm text-gray-500">
+                  Balance: {Number(balance.formatted).toFixed(6)} {balance.symbol}
+                </p>
+              )}
             </div>
-            <Button type="submit" className="w-full">
-              Send
+            <Button 
+              type="submit" 
+              className="w-full"
+              disabled={isPending || isConfirming}
+            >
+              {isPending ? 'Confirming...' : 
+               isConfirming ? 'Processing...' : 
+               'Send'}
             </Button>
           </form>
         </Card>
