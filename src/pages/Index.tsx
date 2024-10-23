@@ -1,4 +1,4 @@
-import { ArrowDownIcon, ArrowUpIcon, SendIcon, ReceiveIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, SendIcon, DownloadIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import TransactionHistory from "@/components/TransactionHistory";
@@ -58,7 +58,7 @@ const Index = () => {
             className="flex flex-col items-center gap-2 h-auto py-4"
             variant="outline"
           >
-            <ReceiveIcon className="h-6 w-6" />
+            <DownloadIcon className="h-6 w-6" />
             <span>Receive</span>
           </Button>
         </div>
