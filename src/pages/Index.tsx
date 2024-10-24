@@ -1,4 +1,4 @@
-import { ArrowDownIcon, ArrowUpIcon, SendIcon, DownloadIcon, WalletIcon, BaggageClaimIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, SendIcon, DownloadIcon, WalletIcon, PiggyBankIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import TransactionHistory from "@/components/TransactionHistory";
@@ -33,24 +33,22 @@ const Index = () => {
           <div className="space-y-4">
             {/* PyPouch Balance */}
             <div className="text-center">
-              <div className="flex items-center justify-center gap-2 text-gray-600">
-                <BaggageClaimIcon className="h-5 w-5" />
-                <h2 className="text-lg font-medium">PyPouch Balance</h2>
+              <div className="flex items-center justify-center gap-3">
+                <PiggyBankIcon className="h-8 w-8 text-primary" />
+                <p className="text-4xl font-bold">
+                  ${balance ? Number(balance.formatted).toFixed(2) : '0.00'}
+                </p>
               </div>
-              <p className="text-4xl font-bold mt-2">
-                ${balance ? Number(balance.formatted).toFixed(2) : '0.00'}
-              </p>
             </div>
 
             {/* Wallet Balance */}
             <div className="text-center pt-2 border-t">
-              <div className="flex items-center justify-center gap-2 text-gray-500">
-                <WalletIcon className="h-4 w-4" />
-                <h3 className="text-sm font-medium">Wallet Balance</h3>
+              <div className="flex items-center justify-center gap-3">
+                <WalletIcon className="h-6 w-6 text-gray-500" />
+                <p className="text-xl font-semibold">
+                  ${balance ? Number(balance.formatted).toFixed(2) : '0.00'}
+                </p>
               </div>
-              <p className="text-xl font-semibold mt-1">
-                ${balance ? Number(balance.formatted).toFixed(2) : '0.00'}
-              </p>
             </div>
           </div>
 
