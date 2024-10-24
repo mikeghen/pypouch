@@ -35,9 +35,12 @@ const Index = () => {
             <div className="text-center">
               <div className="flex items-center justify-center gap-3">
                 <PiggyBankIcon className="h-8 w-8 text-primary" />
-                <p className="text-4xl font-bold">
-                  ${balance ? Number(balance.formatted).toFixed(2) : '0.00'}
-                </p>
+                <div className="flex items-baseline">
+                  <p className="text-4xl font-bold">
+                    {balance ? Number(balance.formatted).toFixed(2) : '0.00'}
+                  </p>
+                  <span className="text-lg ml-1">PYUSD</span>
+                </div>
               </div>
             </div>
 
@@ -45,9 +48,12 @@ const Index = () => {
             <div className="text-center pt-2 border-t">
               <div className="flex items-center justify-center gap-3">
                 <WalletIcon className="h-6 w-6 text-gray-500" />
-                <p className="text-xl font-semibold">
-                  ${balance ? Number(balance.formatted).toFixed(2) : '0.00'}
-                </p>
+                <div className="flex items-baseline">
+                  <p className="text-xl font-semibold">
+                    {balance ? Number(balance.formatted).toFixed(2) : '0.00'}
+                  </p>
+                  <span className="text-sm ml-1">PYUSD</span>
+                </div>
               </div>
             </div>
           </div>
