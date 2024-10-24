@@ -42,7 +42,7 @@ const TransactionHistory = () => {
             from: address
           },
           fromBlock: 20198618n,
-          toBlock: 'latest'
+          toBlock: 21032191n
         }),
         publicClient.getLogs({
           address: PYUSD_ADDRESS,
@@ -59,7 +59,7 @@ const TransactionHistory = () => {
             to: address
           },
           fromBlock: 20198618n,
-          toBlock: 'latest'
+          toBlock: 21032191n
         })
       ]);
 
