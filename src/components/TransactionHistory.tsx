@@ -26,6 +26,10 @@ const TransactionHistory = () => {
     queryFn: async () => {
       if (!address) return [];
 
+      // Get the latest block number and calculate the fromBlock
+      const latestBlock = await publicClient.getBlockNumber();
+      const fromBlock = latestBlock - 10000n;
+
       const [transfersFrom, transfersTo] = await Promise.all([
         publicClient.getLogs({
           address: PYUSD_ADDRESS,
@@ -41,8 +45,8 @@ const TransactionHistory = () => {
           args: {
             from: address
           },
-          fromBlock: 'earliest',
-          toBlock: 'latest'
+          fromBlock,
+          toBlock: latestBlock
         }),
         publicClient.getLogs({
           address: PYUSD_ADDRESS,
@@ -58,8 +62,8 @@ const TransactionHistory = () => {
           args: {
             to: address
           },
-          fromBlock: 'earliest',
-          toBlock: 'latest'
+          fromBlock,
+          toBlock: latestBlock
         })
       ]);
 
