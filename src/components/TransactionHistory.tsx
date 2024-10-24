@@ -9,6 +9,7 @@ import { format } from 'date-fns';
 import { CHUNK_SIZE, TOTAL_BLOCKS } from '@/utils/constants';
 import { fetchTransferLogs } from '@/utils/transferLogs';
 import { TransactionTable } from './TransactionTable';
+import { PYUSD_ADDRESS } from '@/config/contracts';
 
 const TransactionHistory = () => {
   const { toast } = useToast();
@@ -44,10 +45,14 @@ const TransactionHistory = () => {
         .map((event, index) => {
           const isIncoming = event.args.to?.toLowerCase() === address.toLowerCase();
           const amount = Number(formatUnits(event.args.value || 0n, 6)).toFixed(2);
+          const isDeposit = event.args.to?.toLowerCase() === PYUSD_ADDRESS.toLowerCase();
+          
+          let type = isIncoming ? 'Receive' : (isDeposit ? 'Deposit' : 'Send');
+          
           return {
             id: `${event.blockNumber}-${event.logIndex}`,
             date: new Date(Number(blocks[index].timestamp) * 1000),
-            type: isIncoming ? 'Receive' : 'Send',
+            type,
             amount: `${isIncoming ? '+' : '-'}${amount}`,
             from: event.args.from,
             to: event.args.to,
