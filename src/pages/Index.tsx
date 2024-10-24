@@ -1,4 +1,4 @@
-import { ArrowDownIcon, ArrowUpIcon, SendIcon, DownloadIcon, PiggyBankIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, SendIcon, DownloadIcon, PiggyBankIcon, WalletIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import TransactionHistory from "@/components/TransactionHistory";
@@ -6,15 +6,20 @@ import { useNavigate } from "react-router-dom";
 import { WalletConnect } from "@/components/WalletConnect";
 import { useAccount, useBalance } from 'wagmi';
 import { useAaveAPY } from "@/hooks/useAaveAPY";
+import { PYUSD_ADDRESS } from "@/config/wagmi";
 
 const APYUSD_ADDRESS = '0x0c0d01abf3e6adfca0989ebba9d6e85dd58eab1e';
 
 const Index = () => {
   const navigate = useNavigate();
   const { address } = useAccount();
-  const { data: balance } = useBalance({
+  const { data: aPYUSDBalance } = useBalance({
     address,
     token: APYUSD_ADDRESS
+  });
+  const { data: pyusdBalance } = useBalance({
+    address,
+    token: PYUSD_ADDRESS
   });
   const apy = useAaveAPY();
 
@@ -37,7 +42,7 @@ const Index = () => {
               <div className="flex items-center justify-center gap-3">
                 <div className="flex items-baseline">
                   <p className="text-4xl font-bold">
-                    {balance ? Number(balance.formatted).toFixed(2) : '0.00'}
+                    {aPYUSDBalance ? Number(aPYUSDBalance.formatted).toFixed(2) : '0.00'}
                   </p>
                   <span className="text-lg ml-1">aPYUSD</span>
                 </div>
@@ -45,6 +50,12 @@ const Index = () => {
               <p className="text-sm text-green-600 mt-2">
                 {apy ? `earning ${apy.toFixed(2)}% from Aave` : 'Loading yield rate...'}
               </p>
+              <div className="flex items-center justify-center gap-1 mt-2">
+                <WalletIcon className="h-4 w-4 text-gray-400" />
+                <p className="text-sm text-gray-400">
+                  {pyusdBalance ? `${Number(pyusdBalance.formatted).toFixed(2)} PYUSD` : '0.00 PYUSD'}
+                </p>
+              </div>
             </div>
           </div>
         </Card>
