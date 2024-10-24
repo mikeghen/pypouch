@@ -51,6 +51,7 @@ const TransactionHistory = () => {
             amount: `${isIncoming ? '+' : '-'}${amount}`,
             from: event.args.from,
             to: event.args.to,
+            hash: event.transactionHash
           };
         })
         .sort((a, b) => b.date.getTime() - a.date.getTime());
