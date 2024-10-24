@@ -47,9 +47,12 @@ const Index = () => {
               <p className="text-sm text-green-600 mt-2">
                 {apy ? `earning ${apy.toFixed(2)}% from Aave` : 'Loading yield rate...'}
               </p>
-              <p className="text-sm text-gray-500 mt-1">
-                {balance ? `${Number(balance.formatted).toFixed(2)} PYUSD in your wallet` : '0.00 PYUSD in your wallet'}
-              </p>
+              <div className="flex items-center justify-center gap-1 mt-1">
+                <WalletIcon className="h-4 w-4 text-gray-500" />
+                <p className="text-sm text-gray-500">
+                  {balance ? `${Number(balance.formatted).toFixed(2)} PYUSD` : '0.00 PYUSD'}
+                </p>
+              </div>
             </div>
           </div>
         </Card>

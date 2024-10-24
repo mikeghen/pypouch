@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { useWriteContract, useAccount } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt, useAccount, useConfig } from 'wagmi';
 import { TransactionButton } from "@/components/TransactionButton";
 import { pyusdContractConfig } from "@/config/contracts";
 import { parseUnits } from "viem";
@@ -13,7 +13,11 @@ const Deposit = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { address } = useAccount();
+  const config = useConfig();
   const { writeContract, data: hash, isPending } = useWriteContract();
+  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
+    hash,
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +34,7 @@ const Deposit = () => {
         functionName: 'transfer',
         args: [pyusdContractConfig.address, parseUnits('0', 6)],
         account: address,
+        chain: config.chains[0],
       });
       
       console.log('[Deposit] Deposit toast notification shown');

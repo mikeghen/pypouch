@@ -4,16 +4,23 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { useWriteContract, useAccount } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt, useAccount, useConfig } from 'wagmi';
 import { TransactionButton } from "@/components/TransactionButton";
 import { pyusdContractConfig } from "@/config/contracts";
 import { parseUnits } from "viem";
+import { useState } from "react";
 
 const Send = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { address } = useAccount();
+  const config = useConfig();
   const { writeContract, data: hash, isPending } = useWriteContract();
+  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
+    hash,
+  });
+  const [recipientAddress, setRecipientAddress] = useState('');
+  const [amount, setAmount] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,8 +35,9 @@ const Send = () => {
       writeContract({
         ...pyusdContractConfig,
         functionName: 'transfer',
-        args: [recipientAddress, parseUnits(amount.toString(), 6)],
+        args: [recipientAddress, parseUnits(amount, 6)],
         account: address,
+        chain: config.chains[0],
       });
       
       console.log('[Send] Send toast notification shown');
@@ -66,6 +74,8 @@ const Send = () => {
                 id="recipient"
                 type="text"
                 placeholder="Enter recipient address"
+                value={recipientAddress}
+                onChange={(e) => setRecipientAddress(e.target.value)}
                 required
               />
             </div>
@@ -79,6 +89,8 @@ const Send = () => {
                 placeholder="Enter amount"
                 min="0"
                 step="0.01"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
                 required
               />
             </div>
@@ -86,6 +98,8 @@ const Send = () => {
               onClick={handleSend}
               hash={hash}
               isPending={isPending}
+              isConfirming={isConfirming}
+              isSuccess={isSuccess}
               action="Send"
             />
           </form>
