@@ -116,12 +116,6 @@ const Send = () => {
                 onChange={(e) => setAmount(e.target.value)}
                 required
               />
-              <div className="flex items-center gap-1 mt-1">
-                <WalletIcon className="h-3 w-3 text-gray-400" />
-                <p className="text-xs text-gray-400">
-                  {pyusdBalance ? `Available: ${Number(pyusdBalance.formatted).toFixed(2)} PYUSD` : '0.00 PYUSD available'}
-                </p>
-              </div>
             </div>
             <TransactionButton
               onClick={handleSend}
