@@ -10,78 +10,73 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DownloadIcon } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-
-const transactions = [
-  {
-    id: 1,
-    date: "2024-02-20",
-    type: "Interest",
-    amount: "+0.12",
-  },
-  {
-    id: 2,
-    date: "2024-02-20",
-    type: "Deposit",
-    amount: "+500.00",
-  },
-  {
-    id: 3,
-    date: "2024-02-19",
-    type: "Interest",
-    amount: "+0.11",
-  },
-  {
-    id: 4,
-    date: "2024-02-19",
-    type: "Send",
-    amount: "-200.00",
-  },
-  {
-    id: 5,
-    date: "2024-02-18",
-    type: "Interest",
-    amount: "+0.09",
-  },
-  {
-    id: 6,
-    date: "2024-02-18",
-    type: "Receive",
-    amount: "+300.00",
-  },
-  {
-    id: 7,
-    date: "2024-02-17",
-    type: "Interest",
-    amount: "+0.08",
-  },
-  {
-    id: 8,
-    date: "2024-02-17",
-    type: "Withdraw",
-    amount: "-150.00",
-  },
-];
+import { useAccount, usePublicClient } from 'wagmi';
+import { useQuery } from '@tanstack/react-query';
+import { formatUnits } from 'viem';
+import { PYUSD_ADDRESS } from "@/config/wagmi";
+import { format } from 'date-fns';
 
 const TransactionHistory = () => {
   const { toast } = useToast();
+  const { address } = useAccount();
+  const publicClient = usePublicClient();
 
-  const calculateRunningBalance = () => {
-    let balance = 0;
-    return transactions.map(tx => {
-      balance += parseFloat(tx.amount);
-      return { ...tx, balance: balance.toFixed(2) };
-    }).reverse(); // Show most recent first
-  };
+  const { data: transactions = [], isLoading } = useQuery({
+    queryKey: ['pyusd-transfers', address],
+    queryFn: async () => {
+      if (!address) return [];
+
+      const transferEvents = await publicClient.getLogs({
+        address: PYUSD_ADDRESS,
+        event: {
+          type: 'event',
+          name: 'Transfer',
+          inputs: [
+            { type: 'address', name: 'from', indexed: true },
+            { type: 'address', name: 'to', indexed: true },
+            { type: 'uint256', name: 'value' },
+          ],
+        },
+        fromBlock: 'earliest',
+        toBlock: 'latest',
+        filters: {
+          $or: [
+            { from: address },
+            { to: address }
+          ]
+        }
+      });
+
+      return transferEvents
+        .map(event => {
+          const isIncoming = event.args.to?.toLowerCase() === address.toLowerCase();
+          const amount = formatUnits(event.args.value || 0n, 6);
+          return {
+            id: `${event.blockNumber}-${event.logIndex}`,
+            date: new Date((event.blockTime || 0) * 1000),
+            type: isIncoming ? 'Receive' : 'Send',
+            amount: `${isIncoming ? '+' : '-'}${amount}`,
+            from: event.args.from,
+            to: event.args.to,
+          };
+        })
+        .sort((a, b) => b.date.getTime() - a.date.getTime());
+    },
+    enabled: !!address,
+  });
 
   const downloadCSV = () => {
-    const headers = ['Date', 'Type', 'Amount (PYUSD)', 'Balance (PYUSD)'];
+    if (!transactions.length) return;
+
+    const headers = ['Date', 'Type', 'Amount (PYUSD)', 'From', 'To'];
     const csvContent = [
       headers.join(','),
-      ...calculateRunningBalance().map(tx => [
-        tx.date,
+      ...transactions.map(tx => [
+        format(tx.date, 'yyyy-MM-dd HH:mm:ss'),
         tx.type,
         tx.amount,
-        tx.balance
+        tx.from,
+        tx.to
       ].join(','))
     ].join('\n');
 
@@ -89,7 +84,7 @@ const TransactionHistory = () => {
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `transaction-history-${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `pyusd-transfers-${new Date().toISOString().split('T')[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -109,6 +104,7 @@ const TransactionHistory = () => {
           size="sm"
           onClick={downloadCSV}
           className="flex items-center gap-2"
+          disabled={!transactions.length}
         >
           <DownloadIcon className="h-4 w-4" />
           <span className="hidden sm:inline">Download CSV</span>
@@ -118,23 +114,39 @@ const TransactionHistory = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[90px]">Date</TableHead>
+              <TableHead className="w-[150px]">Date</TableHead>
               <TableHead className="w-[80px]">Type</TableHead>
-              <TableHead className="w-[100px] text-right">Amount</TableHead>
-              <TableHead className="w-[100px] text-right">Balance</TableHead>
+              <TableHead className="w-[120px] text-right">Amount</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {calculateRunningBalance().map((tx) => (
-              <TableRow key={tx.id}>
-                <TableCell className="whitespace-nowrap">{tx.date}</TableCell>
-                <TableCell className="whitespace-nowrap">{tx.type}</TableCell>
-                <TableCell className={`text-right whitespace-nowrap ${tx.amount.startsWith("+") ? "text-green-600" : "text-red-600"}`}>
-                  {tx.amount}
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={3} className="text-center py-4">
+                  Loading transactions...
                 </TableCell>
-                <TableCell className="text-right whitespace-nowrap">{tx.balance}</TableCell>
               </TableRow>
-            ))}
+            ) : transactions.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={3} className="text-center py-4">
+                  No transactions found
+                </TableCell>
+              </TableRow>
+            ) : (
+              transactions.map((tx) => (
+                <TableRow key={tx.id}>
+                  <TableCell className="whitespace-nowrap">
+                    {format(tx.date, 'MMM d, yyyy HH:mm')}
+                  </TableCell>
+                  <TableCell className="whitespace-nowrap">{tx.type}</TableCell>
+                  <TableCell className={`text-right whitespace-nowrap ${
+                    tx.amount.startsWith("+") ? "text-green-600" : "text-red-600"
+                  }`}>
+                    {tx.amount}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
