@@ -43,7 +43,7 @@ const TransactionHistory = () => {
       return allTransfers
         .map((event, index) => {
           const isIncoming = event.args.to?.toLowerCase() === address.toLowerCase();
-          const amount = formatUnits(event.args.value || 0n, 6);
+          const amount = Number(formatUnits(event.args.value || 0n, 6)).toFixed(2);
           return {
             id: `${event.blockNumber}-${event.logIndex}`,
             date: new Date(Number(blocks[index].timestamp) * 1000),
