@@ -21,9 +21,18 @@ const Index = () => {
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <WalletIcon className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold text-primary">PyPouch</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <WalletIcon className="h-6 w-6 text-primary" />
+              <span className="text-xl font-bold text-primary">PyPouch</span>
+            </div>
+            {address && (
+              <div className="flex items-center text-gray-500 text-sm">
+                <WalletIcon className="h-4 w-4 mr-1" />
+                <span>{balance ? Number(balance.formatted).toFixed(2) : '0.00'}</span>
+                <span className="ml-1">PYUSD</span>
+              </div>
+            )}
           </div>
           <WalletConnect />
         </div>
@@ -44,25 +53,12 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Wallet Balance */}
-            <div className="text-center pt-2 border-t">
-              <div className="flex items-center justify-center gap-3">
-                <WalletIcon className="h-6 w-6 text-gray-500" />
-                <div className="flex items-baseline">
-                  <p className="text-xl font-semibold">
-                    {balance ? Number(balance.formatted).toFixed(2) : '0.00'}
-                  </p>
-                  <span className="text-sm ml-1">PYUSD</span>
-                </div>
-              </div>
+            <div className="mt-4 text-green-600">
+              <p className="text-sm">Variable Yield</p>
+              <p className="text-xl font-semibold">
+                {apy ? `${apy.toFixed(2)}% APY` : 'Loading...'}
+              </p>
             </div>
-          </div>
-
-          <div className="mt-4 text-green-600">
-            <p className="text-sm">Variable Yield</p>
-            <p className="text-xl font-semibold">
-              {apy ? `${apy.toFixed(2)}% APY` : 'Loading...'}
-            </p>
           </div>
         </Card>
 
