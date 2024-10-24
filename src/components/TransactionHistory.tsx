@@ -41,7 +41,7 @@ const TransactionHistory = () => {
           args: {
             from: address
           },
-          fromBlock: 20198618n,
+          fromBlock: 'earliest',
           toBlock: 'latest'
         }),
         publicClient.getLogs({
@@ -58,7 +58,7 @@ const TransactionHistory = () => {
           args: {
             to: address
           },
-          fromBlock: 20198618n,
+          fromBlock: 'earliest',
           toBlock: 'latest'
         })
       ]);
