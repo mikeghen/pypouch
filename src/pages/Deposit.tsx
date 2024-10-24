@@ -34,6 +34,7 @@ const Deposit = () => {
         functionName: 'transfer',
         args: [pyusdContractConfig.address, parseUnits('0', 6)],
         account: address,
+        chain: chainId
       });
       
       console.log('[Deposit] Deposit toast notification shown');

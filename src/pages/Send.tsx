@@ -69,11 +69,12 @@ const Send = () => {
         functionName: 'transfer',
         args: [recipientAddress as `0x${string}`, value],
         account: address,
+        chain: chainId
       });
       
       console.log('[Send] Transfer contract call successful');
     } catch (error) {
-      console.error('[Send] Error during send:', error);
+      console.error('[Send] Error during withdrawal:', error);
       toast({
         title: "Error",
         description: "Failed to send PYUSD",
