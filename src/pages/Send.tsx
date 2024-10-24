@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, WalletIcon, PiggyBankIcon } from "lucide-react";
+import { ArrowLeftIcon, WalletIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -28,11 +28,6 @@ const Send = () => {
   const { data: pyusdBalance } = useBalance({
     address,
     token: PYUSD_ADDRESS,
-  });
-
-  const { data: aPYUSDBalance } = useBalance({
-    address,
-    token: APYUSD_ADDRESS,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -86,22 +81,6 @@ const Send = () => {
         
         <Card className="p-6">
           <h2 className="text-2xl font-bold mb-6">Send PYUSD</h2>
-          
-          {/* Balance Display */}
-          <div className="mb-6 space-y-2">
-            <div className="flex items-center justify-center gap-2">
-              <WalletIcon className="h-6 w-6 text-primary" />
-              <span className="text-xl font-semibold">
-                {pyusdBalance ? `${Number(pyusdBalance.formatted).toFixed(2)} PYUSD` : '0.00 PYUSD'}
-              </span>
-            </div>
-            <div className="flex items-center justify-center gap-2">
-              <PiggyBankIcon className="h-4 w-4 text-gray-400" />
-              <span className="text-sm text-gray-400">
-                {aPYUSDBalance ? Number(aPYUSDBalance.formatted).toFixed(2) : '0.00'} aPYUSD
-              </span>
-            </div>
-          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
