@@ -132,12 +132,12 @@ const Send = () => {
                 required
               />
               <div 
-                className="flex items-center justify-end gap-1 cursor-pointer hover:opacity-80"
+                className="flex items-center justify-start gap-1 cursor-pointer hover:opacity-80"
                 onClick={handleBalanceClick}
               >
                 <WalletIcon className="h-4 w-4 text-gray-400" />
                 <p className="text-sm text-gray-400">
-                  {pyusdBalance ? `${Number(pyusdBalance.formatted).toFixed(2)} PYUSD available` : '0.00 PYUSD'}
+                  {pyusdBalance ? `${Number(pyusdBalance.formatted).toFixed(6)} PYUSD available` : '0.000000 PYUSD'}
                 </p>
               </div>
             </div>
