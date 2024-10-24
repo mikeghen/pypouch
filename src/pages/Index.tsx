@@ -1,4 +1,4 @@
-import { ArrowDownIcon, ArrowUpIcon, SendIcon, DownloadIcon, WalletIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, SendIcon, DownloadIcon, WalletIcon, BaggageClaimIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import TransactionHistory from "@/components/TransactionHistory";
@@ -27,14 +27,31 @@ const Index = () => {
         </div>
 
         {/* Balance Card */}
-        <Card className="p-6 text-center">
-          <h2 className="text-lg font-medium text-gray-600">Total Balance</h2>
-          <p className="text-4xl font-bold mt-2">
-            {balance ? 
-              `${Number(balance.formatted).toFixed(2)} ${balance.symbol}` : 
-              '0.00 PYUSD'
-            }
-          </p>
+        <Card className="p-6">
+          <div className="space-y-4">
+            {/* PyPouch Balance */}
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 text-gray-600">
+                <BaggageClaimIcon className="h-5 w-5" />
+                <h2 className="text-lg font-medium">PyPouch Balance</h2>
+              </div>
+              <p className="text-4xl font-bold mt-2">
+                ${balance ? Number(balance.formatted).toFixed(2) : '0.00'}
+              </p>
+            </div>
+
+            {/* Wallet Balance */}
+            <div className="text-center pt-2 border-t">
+              <div className="flex items-center justify-center gap-2 text-gray-500">
+                <WalletIcon className="h-4 w-4" />
+                <h3 className="text-sm font-medium">Wallet Balance</h3>
+              </div>
+              <p className="text-xl font-semibold mt-1">
+                ${balance ? Number(balance.formatted).toFixed(2) : '0.00'}
+              </p>
+            </div>
+          </div>
+
           <div className="mt-4 text-green-600">
             <p className="text-sm">Variable Yield</p>
             <p className="text-xl font-semibold">4.4% APY</p>
