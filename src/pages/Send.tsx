@@ -1,14 +1,15 @@
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeftIcon, WalletIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { useWriteContract, useWaitForTransactionReceipt, useAccount, useConfig } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt, useAccount, useConfig, useBalance } from 'wagmi';
 import { TransactionButton } from "@/components/TransactionButton";
 import { pyusdContractConfig } from "@/config/contracts";
 import { parseUnits } from "viem";
 import { useState } from "react";
+import { PYUSD_ADDRESS } from "@/config/wagmi";
 
 const Send = () => {
   const navigate = useNavigate();
@@ -21,6 +22,11 @@ const Send = () => {
   });
   const [recipientAddress, setRecipientAddress] = useState('');
   const [amount, setAmount] = useState('');
+
+  const { data: pyusdBalance } = useBalance({
+    address,
+    token: PYUSD_ADDRESS,
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,6 +59,12 @@ const Send = () => {
     }
   };
 
+  const handleBalanceClick = () => {
+    if (pyusdBalance) {
+      setAmount(pyusdBalance.formatted);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-md mx-auto">
@@ -67,6 +79,15 @@ const Send = () => {
         
         <Card className="p-6">
           <h2 className="text-2xl font-bold mb-6">Send PYUSD</h2>
+          <div 
+            className="flex items-center justify-end gap-1 mb-4 cursor-pointer hover:opacity-80"
+            onClick={handleBalanceClick}
+          >
+            <WalletIcon className="h-4 w-4 text-gray-400" />
+            <p className="text-sm text-gray-400">
+              {pyusdBalance ? `${Number(pyusdBalance.formatted).toFixed(2)} PYUSD available` : '0.00 PYUSD'}
+            </p>
+          </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="recipient" className="text-sm font-medium">
