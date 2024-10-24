@@ -1,11 +1,3 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DownloadIcon } from "lucide-react";
@@ -13,11 +5,10 @@ import { useToast } from "@/components/ui/use-toast";
 import { useAccount, usePublicClient } from 'wagmi';
 import { useQuery } from '@tanstack/react-query';
 import { formatUnits } from 'viem';
-import { PYUSD_ADDRESS } from "@/config/wagmi";
 import { format } from 'date-fns';
-
-const CHUNK_SIZE = 10000n;
-const TOTAL_BLOCKS = 100000n;
+import { CHUNK_SIZE, TOTAL_BLOCKS } from '@/utils/constants';
+import { fetchTransferLogs } from '@/utils/transferLogs';
+import { TransactionTable } from './TransactionTable';
 
 const TransactionHistory = () => {
   const { toast } = useToast();
@@ -32,61 +23,17 @@ const TransactionHistory = () => {
       const latestBlock = await publicClient.getBlockNumber();
       const chunks = [];
       
-      // Calculate number of chunks needed
       const numChunks = Number(TOTAL_BLOCKS / CHUNK_SIZE);
       
-      // Create array of promises for each chunk
       for (let i = 0; i < numChunks; i++) {
         const fromBlock = latestBlock - TOTAL_BLOCKS + (BigInt(i) * CHUNK_SIZE);
         const toBlock = fromBlock + CHUNK_SIZE - 1n;
-        
-        chunks.push(
-          Promise.all([
-            publicClient.getLogs({
-              address: PYUSD_ADDRESS,
-              event: {
-                type: 'event',
-                name: 'Transfer',
-                inputs: [
-                  { type: 'address', name: 'from', indexed: true },
-                  { type: 'address', name: 'to', indexed: true },
-                  { type: 'uint256', name: 'value' },
-                ],
-              },
-              args: {
-                from: address
-              },
-              fromBlock,
-              toBlock
-            }),
-            publicClient.getLogs({
-              address: PYUSD_ADDRESS,
-              event: {
-                type: 'event',
-                name: 'Transfer',
-                inputs: [
-                  { type: 'address', name: 'from', indexed: true },
-                  { type: 'address', name: 'to', indexed: true },
-                  { type: 'uint256', name: 'value' },
-                ],
-              },
-              args: {
-                to: address
-              },
-              fromBlock,
-              toBlock
-            })
-          ])
-        );
+        chunks.push(fetchTransferLogs(publicClient, address, fromBlock, toBlock));
       }
 
-      // Wait for all chunks to complete
       const results = await Promise.all(chunks);
-      
-      // Flatten and combine all transfers
       const allTransfers = results.flatMap(([from, to]) => [...from, ...to]);
       
-      // Get block timestamps for all transfers
       const blocks = await Promise.all(
         allTransfers.map(transfer => 
           publicClient.getBlock({ blockNumber: transfer.blockNumber })
@@ -157,44 +104,7 @@ const TransactionHistory = () => {
         </Button>
       </div>
       <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[150px]">Date</TableHead>
-              <TableHead className="w-[80px]">Type</TableHead>
-              <TableHead className="w-[120px] text-right">Amount</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={3} className="text-center py-4">
-                  Loading transactions...
-                </TableCell>
-              </TableRow>
-            ) : transactions.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={3} className="text-center py-4">
-                  No transactions found
-                </TableCell>
-              </TableRow>
-            ) : (
-              transactions.map((tx) => (
-                <TableRow key={tx.id}>
-                  <TableCell className="whitespace-nowrap">
-                    {format(tx.date, 'MMM d, yyyy HH:mm')}
-                  </TableCell>
-                  <TableCell className="whitespace-nowrap">{tx.type}</TableCell>
-                  <TableCell className={`text-right whitespace-nowrap ${
-                    tx.amount.startsWith("+") ? "text-green-600" : "text-red-600"
-                  }`}>
-                    {tx.amount}
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+        <TransactionTable transactions={transactions} isLoading={isLoading} />
       </div>
     </Card>
   );
