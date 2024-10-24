@@ -1,32 +1,34 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { DownloadIcon } from "lucide-react";
+import { DownloadIcon, MoreHorizontalIcon } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useAccount, usePublicClient } from 'wagmi';
 import { useQuery } from '@tanstack/react-query';
 import { formatUnits } from 'viem';
 import { format } from 'date-fns';
-import { CHUNK_SIZE, TOTAL_BLOCKS } from '@/utils/constants';
+import { CHUNK_SIZE, INITIAL_BLOCKS, LOAD_MORE_SIZE, TOTAL_BLOCKS } from '@/utils/constants';
 import { fetchTransferLogs } from '@/utils/transferLogs';
 import { TransactionTable } from './TransactionTable';
+import { useState } from 'react';
 
 const TransactionHistory = () => {
   const { toast } = useToast();
   const { address } = useAccount();
   const publicClient = usePublicClient();
+  const [blocksToFetch, setBlocksToFetch] = useState(INITIAL_BLOCKS);
 
-  const { data: transactions = [], isLoading } = useQuery({
-    queryKey: ['pyusd-transfers', address],
+  const { data: transactions = [], isLoading, refetch } = useQuery({
+    queryKey: ['pyusd-transfers', address, blocksToFetch],
     queryFn: async () => {
       if (!address) return [];
 
       const latestBlock = await publicClient.getBlockNumber();
       const chunks = [];
       
-      const numChunks = Number(TOTAL_BLOCKS / CHUNK_SIZE);
+      const numChunks = Number(blocksToFetch / CHUNK_SIZE);
       
       for (let i = 0; i < numChunks; i++) {
-        const fromBlock = latestBlock - TOTAL_BLOCKS + (BigInt(i) * CHUNK_SIZE);
+        const fromBlock = latestBlock - blocksToFetch + (BigInt(i) * CHUNK_SIZE);
         const toBlock = fromBlock + CHUNK_SIZE - 1n;
         chunks.push(fetchTransferLogs(publicClient, address, fromBlock, toBlock));
       }
@@ -58,6 +60,18 @@ const TransactionHistory = () => {
     enabled: !!address,
   });
 
+  const handleLoadMore = () => {
+    const newBlocksToFetch = blocksToFetch + LOAD_MORE_SIZE;
+    if (newBlocksToFetch <= TOTAL_BLOCKS) {
+      setBlocksToFetch(newBlocksToFetch);
+      refetch();
+      toast({
+        title: "Loading more transactions",
+        description: "Fetching additional transaction history..."
+      });
+    }
+  };
+
   const downloadCSV = () => {
     if (!transactions.length) return;
 
@@ -88,6 +102,8 @@ const TransactionHistory = () => {
     });
   };
 
+  const canLoadMore = blocksToFetch < TOTAL_BLOCKS;
+
   return (
     <Card className="p-4">
       <div className="flex justify-between items-center mb-4">
@@ -106,6 +122,19 @@ const TransactionHistory = () => {
       <div className="overflow-x-auto">
         <TransactionTable transactions={transactions} isLoading={isLoading} />
       </div>
+      {canLoadMore && transactions.length > 0 && (
+        <div className="mt-4 flex justify-center">
+          <Button
+            variant="outline"
+            onClick={handleLoadMore}
+            disabled={isLoading}
+            className="flex items-center gap-2"
+          >
+            <MoreHorizontalIcon className="h-4 w-4" />
+            Load More
+          </Button>
+        </div>
+      )}
     </Card>
   );
 };
