@@ -80,6 +80,8 @@ const Deposit = () => {
               onClick={handleDeposit}
               hash={hash}
               isPending={isPending}
+              isConfirming={isConfirming}
+              isSuccess={isSuccess}
               action="Deposit"
             />
           </form>

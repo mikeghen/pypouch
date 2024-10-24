@@ -1,19 +1,20 @@
-import { ArrowDownIcon, ArrowUpIcon, SendIcon, DownloadIcon, WalletIcon, PiggyBankIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, SendIcon, DownloadIcon, PiggyBankIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import TransactionHistory from "@/components/TransactionHistory";
 import { useNavigate } from "react-router-dom";
 import { WalletConnect } from "@/components/WalletConnect";
 import { useAccount, useBalance } from 'wagmi';
-import { PYUSD_ADDRESS } from "@/config/wagmi";
 import { useAaveAPY } from "@/hooks/useAaveAPY";
+
+const APYUSD_ADDRESS = '0x0c0d01abf3e6adfca0989ebba9d6e85dd58eab1e';
 
 const Index = () => {
   const navigate = useNavigate();
   const { address } = useAccount();
   const { data: balance } = useBalance({
     address,
-    token: PYUSD_ADDRESS
+    token: APYUSD_ADDRESS
   });
   const apy = useAaveAPY();
 
@@ -38,18 +39,12 @@ const Index = () => {
                   <p className="text-4xl font-bold">
                     {balance ? Number(balance.formatted).toFixed(2) : '0.00'}
                   </p>
-                  <span className="text-lg ml-1">PYUSD</span>
+                  <span className="text-lg ml-1">aPYUSD</span>
                 </div>
               </div>
               <p className="text-sm text-green-600 mt-2">
                 {apy ? `earning ${apy.toFixed(2)}% from Aave` : 'Loading yield rate...'}
               </p>
-              <div className="flex items-center justify-center gap-1 mt-1">
-                <WalletIcon className="h-4 w-4 text-gray-500" />
-                <p className="text-sm text-gray-500">
-                  {balance ? `${Number(balance.formatted).toFixed(2)} PYUSD` : '0.00 PYUSD'}
-                </p>
-              </div>
             </div>
           </div>
         </Card>

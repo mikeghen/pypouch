@@ -30,12 +30,14 @@ const Send = () => {
   const handleSend = () => {
     console.log('[Send] Initiating send transaction');
     
+    if (!amount || !recipientAddress) return;
+
     try {
       console.log('[Send] Attempting to execute send');
       writeContract({
         ...pyusdContractConfig,
         functionName: 'transfer',
-        args: [recipientAddress, parseUnits(amount, 6)],
+        args: [recipientAddress as `0x${string}`, parseUnits(amount, 6)],
         account: address,
         chain: config.chains[0],
       });
