@@ -16,8 +16,6 @@ import { formatUnits } from 'viem';
 import { PYUSD_ADDRESS } from "@/config/wagmi";
 import { format } from 'date-fns';
 
-const FROM_BLOCK = 15921958n;
-
 const TransactionHistory = () => {
   const { toast } = useToast();
   const { address } = useAccount();
@@ -28,7 +26,9 @@ const TransactionHistory = () => {
     queryFn: async () => {
       if (!address) return [];
 
+      // Get the latest block number and calculate the fromBlock
       const latestBlock = await publicClient.getBlockNumber();
+      const fromBlock = latestBlock - 10000n;
 
       const [transfersFrom, transfersTo] = await Promise.all([
         publicClient.getLogs({
@@ -45,7 +45,7 @@ const TransactionHistory = () => {
           args: {
             from: address
           },
-          fromBlock: FROM_BLOCK,
+          fromBlock,
           toBlock: latestBlock
         }),
         publicClient.getLogs({
@@ -62,7 +62,7 @@ const TransactionHistory = () => {
           args: {
             to: address
           },
-          fromBlock: FROM_BLOCK,
+          fromBlock,
           toBlock: latestBlock
         })
       ]);
