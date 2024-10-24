@@ -1,10 +1,30 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { mainnet } from 'wagmi/chains';
+import { http } from 'viem';
+
+const rpcUrl = "https://muddy-burned-asphalt.quiknode.pro/5f5baa4687ddc3a4c503af0a6680d296e13bbc43";
+
+// Configure the mainnet chain with custom RPC URL
+const configuredMainnet = {
+  ...mainnet,
+  rpcUrls: {
+    ...mainnet.rpcUrls,
+    default: {
+      http: [rpcUrl],
+    },
+    public: {
+      http: [rpcUrl],
+    },
+  },
+};
 
 export const wagmiConfig = getDefaultConfig({
   appName: 'PYUSD Pouch',
   projectId: "21fef48091f12692cad574a6f7753643",
-  chains: [mainnet],
+  chains: [configuredMainnet],
+  transports: {
+    [configuredMainnet.id]: http(rpcUrl)
+  },
   ssr: false,
 });
 
