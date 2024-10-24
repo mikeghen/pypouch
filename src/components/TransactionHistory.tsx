@@ -16,6 +16,9 @@ import { formatUnits } from 'viem';
 import { PYUSD_ADDRESS } from "@/config/wagmi";
 import { format } from 'date-fns';
 
+const CHUNK_SIZE = 10000n;
+const TOTAL_BLOCKS = 100000n;
+
 const TransactionHistory = () => {
   const { toast } = useToast();
   const { address } = useAccount();
@@ -26,48 +29,62 @@ const TransactionHistory = () => {
     queryFn: async () => {
       if (!address) return [];
 
-      // Get the latest block number and calculate the fromBlock
       const latestBlock = await publicClient.getBlockNumber();
-      const fromBlock = latestBlock - 10000n;
+      const chunks = [];
+      
+      // Calculate number of chunks needed
+      const numChunks = Number(TOTAL_BLOCKS / CHUNK_SIZE);
+      
+      // Create array of promises for each chunk
+      for (let i = 0; i < numChunks; i++) {
+        const fromBlock = latestBlock - TOTAL_BLOCKS + (BigInt(i) * CHUNK_SIZE);
+        const toBlock = fromBlock + CHUNK_SIZE - 1n;
+        
+        chunks.push(
+          Promise.all([
+            publicClient.getLogs({
+              address: PYUSD_ADDRESS,
+              event: {
+                type: 'event',
+                name: 'Transfer',
+                inputs: [
+                  { type: 'address', name: 'from', indexed: true },
+                  { type: 'address', name: 'to', indexed: true },
+                  { type: 'uint256', name: 'value' },
+                ],
+              },
+              args: {
+                from: address
+              },
+              fromBlock,
+              toBlock
+            }),
+            publicClient.getLogs({
+              address: PYUSD_ADDRESS,
+              event: {
+                type: 'event',
+                name: 'Transfer',
+                inputs: [
+                  { type: 'address', name: 'from', indexed: true },
+                  { type: 'address', name: 'to', indexed: true },
+                  { type: 'uint256', name: 'value' },
+                ],
+              },
+              args: {
+                to: address
+              },
+              fromBlock,
+              toBlock
+            })
+          ])
+        );
+      }
 
-      const [transfersFrom, transfersTo] = await Promise.all([
-        publicClient.getLogs({
-          address: PYUSD_ADDRESS,
-          event: {
-            type: 'event',
-            name: 'Transfer',
-            inputs: [
-              { type: 'address', name: 'from', indexed: true },
-              { type: 'address', name: 'to', indexed: true },
-              { type: 'uint256', name: 'value' },
-            ],
-          },
-          args: {
-            from: address
-          },
-          fromBlock,
-          toBlock: latestBlock
-        }),
-        publicClient.getLogs({
-          address: PYUSD_ADDRESS,
-          event: {
-            type: 'event',
-            name: 'Transfer',
-            inputs: [
-              { type: 'address', name: 'from', indexed: true },
-              { type: 'address', name: 'to', indexed: true },
-              { type: 'uint256', name: 'value' },
-            ],
-          },
-          args: {
-            to: address
-          },
-          fromBlock,
-          toBlock: latestBlock
-        })
-      ]);
-
-      const allTransfers = [...transfersFrom, ...transfersTo];
+      // Wait for all chunks to complete
+      const results = await Promise.all(chunks);
+      
+      // Flatten and combine all transfers
+      const allTransfers = results.flatMap(([from, to]) => [...from, ...to]);
       
       // Get block timestamps for all transfers
       const blocks = await Promise.all(
