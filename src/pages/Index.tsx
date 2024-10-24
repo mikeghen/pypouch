@@ -26,13 +26,6 @@ const Index = () => {
               <WalletIcon className="h-6 w-6 text-primary" />
               <span className="text-xl font-bold text-primary">PyPouch</span>
             </div>
-            {address && (
-              <div className="flex items-center text-gray-500 text-sm">
-                <WalletIcon className="h-4 w-4 mr-1" />
-                <span>{balance ? Number(balance.formatted).toFixed(2) : '0.00'}</span>
-                <span className="ml-1">PYUSD</span>
-              </div>
-            )}
           </div>
           <WalletConnect />
         </div>
@@ -53,6 +46,9 @@ const Index = () => {
               </div>
               <p className="text-sm text-green-600 mt-2">
                 {apy ? `earning ${apy.toFixed(2)}% from Aave` : 'Loading yield rate...'}
+              </p>
+              <p className="text-sm text-gray-500 mt-1">
+                {balance ? `${Number(balance.formatted).toFixed(2)} PYUSD in your wallet` : '0.00 PYUSD in your wallet'}
               </p>
             </div>
           </div>
