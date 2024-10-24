@@ -21,11 +21,9 @@ const Index = () => {
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <WalletIcon className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold text-primary">PyPouch</span>
-            </div>
+          <div className="flex items-center gap-2">
+            <PiggyBankIcon className="h-6 w-6 text-primary" />
+            <span className="text-xl font-bold text-primary">PyPouch</span>
           </div>
           <WalletConnect />
         </div>
@@ -36,7 +34,6 @@ const Index = () => {
             {/* PyPouch Balance */}
             <div className="text-center">
               <div className="flex items-center justify-center gap-3">
-                <PiggyBankIcon className="h-8 w-8 text-primary" />
                 <div className="flex items-baseline">
                   <p className="text-4xl font-bold">
                     {balance ? Number(balance.formatted).toFixed(2) : '0.00'}
