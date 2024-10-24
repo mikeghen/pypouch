@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { WalletConnect } from "@/components/WalletConnect";
 import { useAccount, useBalance } from 'wagmi';
 import { PYUSD_ADDRESS } from "@/config/wagmi";
+import { useAaveAPY } from "@/hooks/useAaveAPY";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const Index = () => {
     address,
     token: PYUSD_ADDRESS
   });
+  const apy = useAaveAPY();
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
@@ -54,7 +56,9 @@ const Index = () => {
 
           <div className="mt-4 text-green-600">
             <p className="text-sm">Variable Yield</p>
-            <p className="text-xl font-semibold">4.4% APY</p>
+            <p className="text-xl font-semibold">
+              {apy ? `${apy.toFixed(2)}% APY` : 'Loading...'}
+            </p>
           </div>
         </Card>
 

@@ -68,7 +68,6 @@ const Send = () => {
         ...pyusdContractConfig,
         functionName: 'transfer',
         args: [recipientAddress as `0x${string}`, value],
-        chain: chainId,
         account: address,
       });
       

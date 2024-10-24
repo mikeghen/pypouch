@@ -33,7 +33,6 @@ const Withdraw = () => {
         ...pyusdContractConfig,
         functionName: 'transfer',
         args: [pyusdContractConfig.address, parseUnits('0', 6)],
-        chain: chainId,
         account: address,
       });
       
