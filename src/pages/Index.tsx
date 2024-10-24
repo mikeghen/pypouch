@@ -1,4 +1,4 @@
-import { ArrowDownIcon, ArrowUpIcon, SendIcon, DownloadIcon, WalletIcon, PiggyBankIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, SendIcon, DownloadIcon, WalletIcon, BaggageClaimIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import TransactionHistory from "@/components/TransactionHistory";
@@ -28,21 +28,37 @@ const Index = () => {
           <WalletConnect />
         </div>
 
+        {/* Balance Card */}
         <Card className="p-6">
           <div className="space-y-4">
-            <div className="flex items-center justify-center gap-3">
-              <PiggyBankIcon className="h-8 w-8 text-primary" />
-              <p className="text-4xl font-bold">
+            {/* PyPouch Balance */}
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 text-gray-600">
+                <BaggageClaimIcon className="h-5 w-5" />
+                <h2 className="text-lg font-medium">PyPouch Balance</h2>
+              </div>
+              <p className="text-4xl font-bold mt-2">
                 ${balance ? Number(balance.formatted).toFixed(2) : '0.00'}
               </p>
             </div>
 
-            <div className="mt-4 text-green-600">
-              <p className="text-sm">Variable Yield</p>
-              <p className="text-xl font-semibold">
-                {apy ? `${apy.toFixed(2)}% APY` : 'Loading...'}
+            {/* Wallet Balance */}
+            <div className="text-center pt-2 border-t">
+              <div className="flex items-center justify-center gap-2 text-gray-500">
+                <WalletIcon className="h-4 w-4" />
+                <h3 className="text-sm font-medium">Wallet Balance</h3>
+              </div>
+              <p className="text-xl font-semibold mt-1">
+                ${balance ? Number(balance.formatted).toFixed(2) : '0.00'}
               </p>
             </div>
+          </div>
+
+          <div className="mt-4 text-green-600">
+            <p className="text-sm">Variable Yield</p>
+            <p className="text-xl font-semibold">
+              {apy ? `${apy.toFixed(2)}% APY` : 'Loading...'}
+            </p>
           </div>
         </Card>
 
