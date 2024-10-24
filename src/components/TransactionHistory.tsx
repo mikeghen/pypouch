@@ -28,7 +28,7 @@ const TransactionHistory = () => {
 
       // Get the latest block number and calculate the fromBlock
       const latestBlock = await publicClient.getBlockNumber();
-      const fromBlock = latestBlock - 10000n;
+      const fromBlock = latestBlock - 100000n;
 
       const [transfersFrom, transfersTo] = await Promise.all([
         publicClient.getLogs({
