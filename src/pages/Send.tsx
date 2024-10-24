@@ -11,8 +11,6 @@ import { parseUnits } from "viem";
 import { useState } from "react";
 import { PYUSD_ADDRESS } from "@/config/wagmi";
 
-const APYUSD_ADDRESS = '0x0c0d01abf3e6adfca0989ebba9d6e85dd58eab1e';
-
 const Send = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
