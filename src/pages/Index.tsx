@@ -51,12 +51,8 @@ const Index = () => {
                   <span className="text-lg ml-1">PYUSD</span>
                 </div>
               </div>
-            </div>
-
-            <div className="mt-4 text-green-600">
-              <p className="text-sm">Variable Yield</p>
-              <p className="text-xl font-semibold">
-                {apy ? `${apy.toFixed(2)}% APY` : 'Loading...'}
+              <p className="text-sm text-green-600 mt-2">
+                {apy ? `earning ${apy.toFixed(2)}% from Aave` : 'Loading yield rate...'}
               </p>
             </div>
           </div>
