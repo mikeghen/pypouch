@@ -26,34 +26,59 @@ const TransactionHistory = () => {
     queryFn: async () => {
       if (!address) return [];
 
-      const transferEvents = await publicClient.getLogs({
-        address: PYUSD_ADDRESS,
-        event: {
-          type: 'event',
-          name: 'Transfer',
-          inputs: [
-            { type: 'address', name: 'from', indexed: true },
-            { type: 'address', name: 'to', indexed: true },
-            { type: 'uint256', name: 'value' },
-          ],
-        },
-        fromBlock: 'earliest',
-        toBlock: 'latest',
-        filters: {
-          $or: [
-            { from: address },
-            { to: address }
-          ]
-        }
-      });
+      const [transfersFrom, transfersTo] = await Promise.all([
+        publicClient.getLogs({
+          address: PYUSD_ADDRESS,
+          event: {
+            type: 'event',
+            name: 'Transfer',
+            inputs: [
+              { type: 'address', name: 'from', indexed: true },
+              { type: 'address', name: 'to', indexed: true },
+              { type: 'uint256', name: 'value' },
+            ],
+          },
+          args: {
+            from: address
+          },
+          fromBlock: 'earliest',
+          toBlock: 'latest'
+        }),
+        publicClient.getLogs({
+          address: PYUSD_ADDRESS,
+          event: {
+            type: 'event',
+            name: 'Transfer',
+            inputs: [
+              { type: 'address', name: 'from', indexed: true },
+              { type: 'address', name: 'to', indexed: true },
+              { type: 'uint256', name: 'value' },
+            ],
+          },
+          args: {
+            to: address
+          },
+          fromBlock: 'earliest',
+          toBlock: 'latest'
+        })
+      ]);
 
-      return transferEvents
-        .map(event => {
+      const allTransfers = [...transfersFrom, ...transfersTo];
+      
+      // Get block timestamps for all transfers
+      const blocks = await Promise.all(
+        allTransfers.map(transfer => 
+          publicClient.getBlock({ blockNumber: transfer.blockNumber })
+        )
+      );
+
+      return allTransfers
+        .map((event, index) => {
           const isIncoming = event.args.to?.toLowerCase() === address.toLowerCase();
           const amount = formatUnits(event.args.value || 0n, 6);
           return {
             id: `${event.blockNumber}-${event.logIndex}`,
-            date: new Date((event.blockTime || 0) * 1000),
+            date: new Date(Number(blocks[index].timestamp) * 1000),
             type: isIncoming ? 'Receive' : 'Send',
             amount: `${isIncoming ? '+' : '-'}${amount}`,
             from: event.args.from,
