@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { useWriteContract, useWaitForTransactionReceipt, useAccount, useConfig, useBalance, useReadContract } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt, useAccount, useConfig, useBalance } from 'wagmi';
 import { TransactionButton } from "@/components/TransactionButton";
 import { pyusdContractConfig, PYPOUCH_CONTRACT_ADDRESS } from "@/config/contracts";
 import { parseUnits } from "viem";
@@ -20,11 +20,6 @@ const Deposit = () => {
   const [amount, setAmount] = useState('');
   const [needsApproval, setNeedsApproval] = useState(true);
   const apy = useAaveAPY();
-
-  const { data: aPYUSDBalance } = useBalance({
-    address,
-    token: APYUSD_ADDRESS
-  });
 
   const { writeContract: writeApprove, data: approveHash, isPending: isApprovePending } = useWriteContract();
   const { isLoading: isApproveConfirming, isSuccess: isApproveSuccess } = useWaitForTransactionReceipt({
