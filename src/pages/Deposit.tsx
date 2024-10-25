@@ -1,13 +1,14 @@
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeftIcon, WalletIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { useWriteContract, useWaitForTransactionReceipt, useAccount, useConfig } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt, useAccount, useConfig, useBalance } from 'wagmi';
 import { TransactionButton } from "@/components/TransactionButton";
 import { pyusdContractConfig } from "@/config/contracts";
 import { parseUnits } from "viem";
+import { PYUSD_ADDRESS } from "@/config/wagmi";
 
 const Deposit = () => {
   const navigate = useNavigate();
@@ -17,6 +18,11 @@ const Deposit = () => {
   const { writeContract, data: hash, isPending } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
+  });
+
+  const { data: pyusdBalance } = useBalance({
+    address,
+    token: PYUSD_ADDRESS,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -75,6 +81,14 @@ const Deposit = () => {
                 step="0.01"
                 required
               />
+              <div 
+                className="flex items-center justify-start gap-1 cursor-pointer hover:opacity-80"
+              >
+                <WalletIcon className="h-4 w-4 text-gray-400" />
+                <p className="text-sm text-gray-400">
+                  {pyusdBalance ? `${Number(pyusdBalance.formatted).toFixed(6)} PYUSD available` : '0.000000 PYUSD'}
+                </p>
+              </div>
             </div>
             <TransactionButton
               onClick={handleDeposit}
