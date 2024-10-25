@@ -9,6 +9,7 @@ import { TransactionButton } from "@/components/TransactionButton";
 import { pyusdContractConfig } from "@/config/contracts";
 import { parseUnits } from "viem";
 import { PYUSD_ADDRESS } from "@/config/wagmi";
+import { useState } from "react";
 
 const Deposit = () => {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ const Deposit = () => {
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
   });
+  const [amount, setAmount] = useState('');
 
   const { data: pyusdBalance } = useBalance({
     address,
@@ -54,6 +56,12 @@ const Deposit = () => {
     }
   };
 
+  const handleBalanceClick = () => {
+    if (pyusdBalance) {
+      setAmount(pyusdBalance.formatted);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-md mx-auto">
@@ -79,10 +87,13 @@ const Deposit = () => {
                 placeholder="Enter amount"
                 min="0"
                 step="0.01"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
                 required
               />
               <div 
                 className="flex items-center justify-start gap-1 cursor-pointer hover:opacity-80"
+                onClick={handleBalanceClick}
               >
                 <WalletIcon className="h-4 w-4 text-gray-400" />
                 <p className="text-sm text-gray-400">
