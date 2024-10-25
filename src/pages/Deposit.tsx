@@ -38,7 +38,6 @@ const Deposit = () => {
     ...pyusdContractConfig,
     functionName: 'allowance',
     args: [address!, PYPOUCH_CONTRACT_ADDRESS],
-    enabled: !!address,
   });
 
   useEffect(() => {
@@ -125,10 +124,9 @@ const Deposit = () => {
               </label>
               <Input
                 id="amount"
-                type="number"
+                type="text"
+                inputMode="decimal"
                 placeholder="Enter amount"
-                min="0"
-                step="0.01"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 required
