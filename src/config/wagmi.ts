@@ -2,8 +2,7 @@ import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { mainnet } from 'wagmi/chains';
 import { http } from 'viem';
 
-// Using Ankr's public RPC endpoint instead
-const rpcUrl = "https://rpc.ankr.com/eth";
+const rpcUrl = "https://muddy-burned-asphalt.quiknode.pro/5f5baa4687ddc3a4c503af0a6680d296e13bbc43";
 
 // Configure the mainnet chain with custom RPC URL
 const configuredMainnet = {
