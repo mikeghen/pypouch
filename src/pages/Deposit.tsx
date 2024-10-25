@@ -1,16 +1,18 @@
-import { ArrowLeftIcon, WalletIcon } from "lucide-react";
+import { ArrowLeftIcon, WalletIcon, PiggyBankIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { useWriteContract, useWaitForTransactionReceipt, useAccount, useConfig, useBalance } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt, useAccount, useConfig, useBalance, useReadContract } from 'wagmi';
 import { TransactionButton } from "@/components/TransactionButton";
 import { pyusdContractConfig, PYPOUCH_CONTRACT_ADDRESS } from "@/config/contracts";
 import { parseUnits } from "viem";
 import { PYUSD_ADDRESS } from "@/config/wagmi";
 import { useState, useEffect } from "react";
 import { useAaveAPY } from "@/hooks/useAaveAPY";
+
+const APYUSD_ADDRESS = '0x0c0d01abf3e6adfca0989ebba9d6e85dd58eab1e';
 
 const Deposit = () => {
   const navigate = useNavigate();
@@ -20,6 +22,11 @@ const Deposit = () => {
   const [amount, setAmount] = useState('');
   const [needsApproval, setNeedsApproval] = useState(true);
   const apy = useAaveAPY();
+
+  const { data: aPYUSDBalance } = useBalance({
+    address,
+    token: APYUSD_ADDRESS
+  });
 
   const { writeContract: writeApprove, data: approveHash, isPending: isApprovePending } = useWriteContract();
   const { isLoading: isApproveConfirming, isSuccess: isApproveSuccess } = useWaitForTransactionReceipt({
@@ -116,14 +123,27 @@ const Deposit = () => {
           <ArrowLeftIcon className="h-4 w-4 mr-2" />
           Back
         </Button>
+
+        <Card className="p-6 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <PiggyBankIcon className="h-6 w-6 text-primary" />
+            <h2 className="text-2xl font-bold">Deposit Balance</h2>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-baseline">
+              <p className="text-3xl font-bold">
+                {aPYUSDBalance ? Number(aPYUSDBalance.formatted).toFixed(2) : '0.00'}
+              </p>
+              <span className="text-lg ml-2">aPYUSD</span>
+            </div>
+            <p className="text-sm text-green-600">
+              {apy ? `earning ${apy.toFixed(2)}% from Aave` : 'Loading yield rate...'}
+            </p>
+          </div>
+        </Card>
         
         <Card className="p-6">
-          <h2 className="text-2xl font-bold mb-2">Deposit PYUSD</h2>
-          {apy && (
-            <p className="text-sm text-green-600 mb-6">
-              Your deposits will earn {apy.toFixed(2)}% APY from Aave
-            </p>
-          )}
+          <h2 className="text-2xl font-bold mb-6">Deposit PYUSD</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="amount" className="text-sm font-medium">
