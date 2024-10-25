@@ -1,4 +1,5 @@
 export const PYUSD_ADDRESS = '0x6c3ea9036406852006290770BEdFcAbA0e23A0e8';
+export const PYPOUCH_CONTRACT_ADDRESS = '0xb41174D2c1a587f894F5584748e1D30f3781e348';
 
 export const pyusdContractConfig = {
     address: PYUSD_ADDRESS,

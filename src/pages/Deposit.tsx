@@ -4,50 +4,92 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { useWriteContract, useWaitForTransactionReceipt, useAccount, useConfig, useBalance } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt, useAccount, useConfig, useBalance, useReadContract } from 'wagmi';
 import { TransactionButton } from "@/components/TransactionButton";
-import { pyusdContractConfig } from "@/config/contracts";
+import { pyusdContractConfig, PYPOUCH_CONTRACT_ADDRESS } from "@/config/contracts";
 import { parseUnits } from "viem";
 import { PYUSD_ADDRESS } from "@/config/wagmi";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Deposit = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { address } = useAccount();
   const config = useConfig();
-  const { writeContract, data: hash, isPending } = useWriteContract();
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
-    hash,
-  });
   const [amount, setAmount] = useState('');
+  const [needsApproval, setNeedsApproval] = useState(true);
+
+  const { writeContract: writeApprove, data: approveHash, isPending: isApprovePending } = useWriteContract();
+  const { isLoading: isApproveConfirming, isSuccess: isApproveSuccess } = useWaitForTransactionReceipt({
+    hash: approveHash,
+  });
+
+  const { writeContract: writeDeposit, data: depositHash, isPending: isDepositPending } = useWriteContract();
+  const { isLoading: isDepositConfirming, isSuccess: isDepositSuccess } = useWaitForTransactionReceipt({
+    hash: depositHash,
+  });
 
   const { data: pyusdBalance } = useBalance({
     address,
     token: PYUSD_ADDRESS,
   });
 
+  const { data: allowance, refetch: refetchAllowance } = useReadContract({
+    ...pyusdContractConfig,
+    functionName: 'allowance',
+    args: [address!, PYPOUCH_CONTRACT_ADDRESS],
+    enabled: !!address,
+  });
+
+  useEffect(() => {
+    if (allowance !== undefined) {
+      setNeedsApproval(allowance === 0n);
+    }
+  }, [allowance]);
+
+  useEffect(() => {
+    if (isApproveSuccess) {
+      refetchAllowance();
+    }
+  }, [isApproveSuccess, refetchAllowance]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    handleDeposit();
+    if (needsApproval) {
+      handleApprove();
+    } else {
+      handleDeposit();
+    }
   };
 
-  const handleDeposit = () => {
-    console.log('[Deposit] Initiating deposit transaction');
-    
+  const handleApprove = () => {
     try {
-      console.log('[Deposit] Attempting to execute deposit');
-      writeContract({
+      writeApprove({
         ...pyusdContractConfig,
-        functionName: 'transfer',
-        args: [pyusdContractConfig.address, parseUnits('0', 6)],
+        functionName: 'approve',
+        args: [PYPOUCH_CONTRACT_ADDRESS, parseUnits(amount || '0', 6)],
         account: address,
         chain: config.chains[0],
       });
-      
-      console.log('[Deposit] Deposit toast notification shown');
     } catch (error) {
-      console.error('[Deposit] Error during deposit:', error);
+      toast({
+        title: "Approval failed",
+        description: "An error occurred during approval.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeposit = () => {
+    try {
+      writeDeposit({
+        ...pyusdContractConfig,
+        functionName: 'transfer',
+        args: [PYPOUCH_CONTRACT_ADDRESS, parseUnits(amount || '0', 6)],
+        account: address,
+        chain: config.chains[0],
+      });
+    } catch (error) {
       toast({
         title: "Deposit failed",
         description: "An error occurred during deposit.",
@@ -101,14 +143,25 @@ const Deposit = () => {
                 </p>
               </div>
             </div>
-            <TransactionButton
-              onClick={handleDeposit}
-              hash={hash}
-              isPending={isPending}
-              isConfirming={isConfirming}
-              isSuccess={isSuccess}
-              action="Deposit"
-            />
+            {needsApproval ? (
+              <TransactionButton
+                onClick={handleApprove}
+                hash={approveHash}
+                isPending={isApprovePending}
+                isConfirming={isApproveConfirming}
+                isSuccess={isApproveSuccess}
+                action="Approve"
+              />
+            ) : (
+              <TransactionButton
+                onClick={handleDeposit}
+                hash={depositHash}
+                isPending={isDepositPending}
+                isConfirming={isDepositConfirming}
+                isSuccess={isDepositSuccess}
+                action="Deposit"
+              />
+            )}
           </form>
         </Card>
       </div>
