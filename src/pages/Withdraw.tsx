@@ -1,13 +1,16 @@
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeftIcon, WalletIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { useWriteContract, useWaitForTransactionReceipt, useAccount, useConfig } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt, useAccount, useConfig, useBalance } from 'wagmi';
 import { TransactionButton } from "@/components/TransactionButton";
 import { pyusdContractConfig } from "@/config/contracts";
 import { parseUnits } from "viem";
+import { useState } from "react";
+
+const APYUSD_ADDRESS = '0x0c0d01abf3e6adfca0989ebba9d6e85dd58eab1e';
 
 const Withdraw = () => {
   const navigate = useNavigate();
@@ -17,6 +20,12 @@ const Withdraw = () => {
   const { writeContract, data: hash, isPending } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
+  });
+  const [amount, setAmount] = useState('');
+
+  const { data: aPYUSDBalance } = useBalance({
+    address,
+    token: APYUSD_ADDRESS
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -32,7 +41,7 @@ const Withdraw = () => {
       writeContract({
         ...pyusdContractConfig,
         functionName: 'transfer',
-        args: [pyusdContractConfig.address, parseUnits('0', 6)],
+        args: [pyusdContractConfig.address, parseUnits(amount || '0', 6)],
         account: address,
         chain: config.chains[0],
       });
@@ -45,6 +54,12 @@ const Withdraw = () => {
         description: "An error occurred during withdrawal.",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleBalanceClick = () => {
+    if (aPYUSDBalance) {
+      setAmount(aPYUSDBalance.formatted);
     }
   };
 
@@ -73,8 +88,19 @@ const Withdraw = () => {
                 placeholder="Enter amount"
                 min="0"
                 step="0.01"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
                 required
               />
+              <div 
+                className="flex items-center justify-start gap-1 cursor-pointer hover:opacity-80"
+                onClick={handleBalanceClick}
+              >
+                <WalletIcon className="h-4 w-4 text-gray-400" />
+                <p className="text-sm text-gray-400">
+                  {aPYUSDBalance ? `${Number(aPYUSDBalance.formatted).toFixed(6)} aPYUSD available` : '0.000000 aPYUSD'}
+                </p>
+              </div>
             </div>
             <TransactionButton
               onClick={handleWithdraw}
