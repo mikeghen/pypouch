@@ -125,9 +125,9 @@ const Deposit = () => {
         </Button>
 
         <Card className="p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold">Current Balance</h2>
+          <div className="flex items-center gap-2 mb-4">
             <PiggyBankIcon className="h-6 w-6 text-primary" />
+            <h2 className="text-2xl font-bold">Deposit Balance</h2>
           </div>
           <div className="space-y-2">
             <div className="flex items-baseline">
