@@ -5,7 +5,6 @@ import { Hash } from "viem";
 interface TransactionButtonProps {
   onClick: () => void;
   hash: Hash | undefined;
-  isPending: boolean;
   isConfirming: boolean;
   isSuccess: boolean;
   action: string;
@@ -15,7 +14,6 @@ interface TransactionButtonProps {
 export const TransactionButton = ({
   onClick,
   hash,
-  isPending,
   isConfirming,
   isSuccess,
   action,
@@ -23,7 +21,7 @@ export const TransactionButton = ({
 }: TransactionButtonProps) => {
   const { isLoading, buttonText } = useTransactionState(
     hash,
-    isPending,
+    false, // isPending is no longer used
     isConfirming,
     isSuccess,
     action

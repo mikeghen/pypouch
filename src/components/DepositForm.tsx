@@ -65,7 +65,6 @@ export const DepositForm = () => {
         <TransactionButton
           onClick={handleDeposit}
           hash={depositState.hash}
-          isPending={depositState.isPending}
           isConfirming={depositState.isConfirming}
           isSuccess={depositState.isSuccess}
           action="Deposit"
@@ -74,7 +73,6 @@ export const DepositForm = () => {
         <TransactionButton
           onClick={handleApprove}
           hash={approveState.hash}
-          isPending={approveState.isPending}
           isConfirming={approveState.isConfirming}
           isSuccess={approveState.isSuccess}
           action="Approve"
