@@ -63,6 +63,8 @@ const Deposit = () => {
   };
 
   const handleApprove = () => {
+    if (isApprovePending || isApproveConfirming) return;
+    
     try {
       writeApprove({
         ...pyusdContractConfig,
@@ -81,6 +83,8 @@ const Deposit = () => {
   };
 
   const handleDeposit = () => {
+    if (isDepositPending || isDepositConfirming) return;
+    
     try {
       writeDeposit({
         ...pyPouchContractConfig,
