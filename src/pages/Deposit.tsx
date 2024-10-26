@@ -43,8 +43,13 @@ const Deposit = () => {
 
   useEffect(() => {
     if (allowance !== undefined && amount) {
-      const amountInBaseUnits = parseUnits(amount, 6);
-      setNeedsApproval(allowance < amountInBaseUnits);
+      try {
+        const amountInBaseUnits = parseUnits(amount, 6);
+        setNeedsApproval(BigInt(allowance) < amountInBaseUnits);
+      } catch (e) {
+        // Invalid amount input, keep approval needed
+        setNeedsApproval(true);
+      }
     }
   }, [allowance, amount]);
 
