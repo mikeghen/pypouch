@@ -50,6 +50,7 @@ const Deposit = () => {
   useEffect(() => {
     if (isApproveSuccess) {
       refetchAllowance();
+      setNeedsApproval(false);
     }
   }, [isApproveSuccess, refetchAllowance]);
 
