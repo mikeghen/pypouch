@@ -1,50 +1,82 @@
-# React + TypeScript + Vite
+# PyPouch
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+PyPouch is a smart contract designed to facilitate the management of PYUSD savings by interfacing directly with Aave. Users can seamlessly deposit and withdraw PYUSD while earning yield, with automated yield accounting through on-chain transaction checkpoints.
 
-Currently, two official plugins are available:
+## Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+PyPouch simplifies DeFi savings management by providing:
 
-## Expanding the ESLint configuration
+- **Automated Yield Tracking**: Every transaction (deposit, withdraw, send, receive) creates a checkpoint that calculates and logs interest earned
+- **Direct Aave Integration**: Seamlessly deposit and withdraw PYUSD to earn yield from Aave
+- **User-Friendly Interface**: Simple UI for managing deposits, withdrawals, and transfers
+- **Real-Time APY Display**: Shows current yield rates from Aave
+- **Transaction History**: Track all your deposit, withdrawal, and transfer activities
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Features
 
-- Configure the top-level `parserOptions` property like this:
+### Deposit and Withdraw
+- Deposit PYUSD to start earning yield immediately
+- Withdraw anytime with automatically calculated interest
+- Real-time balance and APY updates
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### Send and Receive
+- Transfer PYUSD to other users directly
+- Generate QR codes for easy receiving
+- Automatic yield calculations on transfers
+
+### Yield Tracking
+- On-chain events log interest earned between transactions
+- Transparent and immutable record of all earnings
+- No manual calculations needed
+
+## Technical Architecture
+
+PyPouch consists of:
+
+- Smart contract interfacing with Aave
+- React-based frontend with Web3 integration
+- Event-driven yield accounting system
+
+### Smart Contract Components
+- Deposit function for Aave integration
+- Withdraw function with yield calculations
+- Transfer functions with balance recalculation
+- Event emission for yield tracking
+
+## Future Development
+
+Planned features include:
+
+- Support for additional Aave-listed assets
+- Borrowing functionality against deposited savings
+- Credit delegation integration with institutional lenders
+- Enhanced yield optimization strategies
+
+## Getting Started
+
+1. Connect your wallet using the connect button
+2. Ensure you have PYUSD in your wallet
+3. Use the Deposit button to start earning yield
+4. Monitor your earnings in real-time
+5. Withdraw or transfer funds as needed
+
+## Development Setup
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Contributing
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
