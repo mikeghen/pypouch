@@ -2,7 +2,7 @@ import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { mainnet } from 'wagmi/chains';
 import { http } from 'viem';
 
-const rpcUrl = "https://muddy-burned-asphalt.quiknode.pro/5f5baa4687ddc3a4c503af0a6680d296e13bbc43";
+const rpcUrl = "https://rpc.tenderly.co/fork/1e7bdf7c-e80b-4fb9-abe2-d628d62a1f70";
 
 // Configure the mainnet chain with custom RPC URL
 const configuredMainnet = {
