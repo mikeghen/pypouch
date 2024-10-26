@@ -2,6 +2,8 @@
 
 PyPouch is a smart contract designed to facilitate the management of PYUSD savings by interfacing directly with Aave. Users can seamlessly deposit and withdraw PYUSD while earning yield, with automated yield accounting through on-chain transaction checkpoints.
 
+![Dashboard Screenshot](./dashboard.png)
+
 ## Overview
 
 PyPouch simplifies DeFi savings management by providing:
@@ -18,6 +20,8 @@ PyPouch simplifies DeFi savings management by providing:
 - Deposit PYUSD to start earning yield immediately
 - Withdraw anytime with automatically calculated interest
 - Real-time balance and APY updates
+
+![Deposit Form](./deposit.png)
 
 ### Send and Receive
 - Transfer PYUSD to other users directly
