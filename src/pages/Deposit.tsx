@@ -6,9 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { useWriteContract, useWaitForTransactionReceipt, useAccount, useConfig, useBalance, useReadContract } from 'wagmi';
 import { TransactionButton } from "@/components/TransactionButton";
-import { pyusdContractConfig, PYPOUCH_CONTRACT_ADDRESS } from "@/config/contracts";
+import { pyusdContractConfig, pyPouchContractConfig } from "@/config/contracts";
 import { parseUnits } from "viem";
-import { PYUSD_ADDRESS } from "@/config/wagmi";
 import { useState, useEffect } from "react";
 import { useAaveAPY } from "@/hooks/useAaveAPY";
 
@@ -33,20 +32,20 @@ const Deposit = () => {
 
   const { data: pyusdBalance } = useBalance({
     address,
-    token: PYUSD_ADDRESS,
+    token: pyusdContractConfig.address,
   });
 
   const { data: allowance, refetch: refetchAllowance } = useReadContract({
     ...pyusdContractConfig,
     functionName: 'allowance',
-    args: [address!, PYPOUCH_CONTRACT_ADDRESS],
+    args: [address!, pyPouchContractConfig.address],
   });
 
   useEffect(() => {
-    if (allowance !== undefined) {
-      setNeedsApproval(allowance === 0n);
+    if (allowance !== undefined && amount) {
+      setNeedsApproval(allowance < parseUnits(amount, 6));
     }
-  }, [allowance]);
+  }, [allowance, amount]);
 
   useEffect(() => {
     if (isApproveSuccess) {
@@ -68,7 +67,7 @@ const Deposit = () => {
       writeApprove({
         ...pyusdContractConfig,
         functionName: 'approve',
-        args: [PYPOUCH_CONTRACT_ADDRESS, parseUnits(amount || '0', 6)],
+        args: [pyPouchContractConfig.address, parseUnits(amount || '0', 6)],
         account: address,
         chain: config.chains[0],
       });
@@ -84,9 +83,9 @@ const Deposit = () => {
   const handleDeposit = () => {
     try {
       writeDeposit({
-        ...pyusdContractConfig,
-        functionName: 'transfer',
-        args: [PYPOUCH_CONTRACT_ADDRESS, parseUnits(amount || '0', 6)],
+        ...pyPouchContractConfig,
+        functionName: 'deposit',
+        args: [parseUnits(amount || '0', 6)],
         account: address,
         chain: config.chains[0],
       });

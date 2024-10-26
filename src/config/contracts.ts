@@ -11,91 +11,12 @@ export const pyusdContractConfig = {
     ]
 } as const;
 
-export const aavePoolConfig = {
-    address: '0x87870bca3f3fd6335c3f4ce8392d69350b4fa4e2' as const,
+export const pyPouchContractConfig = {
+    address: PYPOUCH_CONTRACT_ADDRESS,
     abi: [
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "asset",
-                    "type": "address"
-                }
-            ],
-            "name": "getReserveData",
-            "outputs": [
-                {
-                    "components": [
-                        {
-                            "components": [
-                                {
-                                    "internalType": "uint256",
-                                    "name": "data",
-                                    "type": "uint256"
-                                }
-                            ],
-                            "internalType": "struct DataTypes.ReserveConfigurationMap",
-                            "name": "configuration",
-                            "type": "tuple"
-                        },
-                        {
-                            "internalType": "uint128",
-                            "name": "liquidityIndex",
-                            "type": "uint128"
-                        },
-                        {
-                            "internalType": "uint128",
-                            "name": "currentLiquidityRate",
-                            "type": "uint128"
-                        },
-                        {
-                            "internalType": "uint128",
-                            "name": "variableBorrowIndex",
-                            "type": "uint128"
-                        },
-                        {
-                            "internalType": "uint128",
-                            "name": "currentVariableBorrowRate",
-                            "type": "uint128"
-                        },
-                        {
-                            "internalType": "uint128",
-                            "name": "currentStableBorrowRate",
-                            "type": "uint128"
-                        },
-                        {
-                            "internalType": "uint40",
-                            "name": "lastUpdateTimestamp",
-                            "type": "uint40"
-                        },
-                        {
-                            "internalType": "uint16",
-                            "name": "id",
-                            "type": "uint16"
-                        },
-                        {
-                            "internalType": "address",
-                            "name": "aTokenAddress",
-                            "type": "address"
-                        },
-                        {
-                            "internalType": "address",
-                            "name": "stableDebtTokenAddress",
-                            "type": "address"
-                        },
-                        {
-                            "internalType": "address",
-                            "name": "variableDebtTokenAddress",
-                            "type": "address"
-                        }
-                    ],
-                    "internalType": "struct DataTypes.ReserveData",
-                    "name": "",
-                    "type": "tuple"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        }
+        {"type":"function","name":"deposit","inputs":[{"name":"amount","type":"uint256"}],"outputs":[],"stateMutability":"nonpayable"},
+        {"type":"function","name":"withdraw","inputs":[{"name":"amount","type":"uint256"},{"name":"receiver","type":"address"}],"outputs":[],"stateMutability":"nonpayable"},
+        {"type":"function","name":"getNetDeposits","inputs":[{"name":"user","type":"address"}],"outputs":[{"name":"","type":"uint256"}],"stateMutability":"view"},
+        {"type":"function","name":"getAPYUSDBalance","inputs":[],"outputs":[{"name":"","type":"uint256"}],"stateMutability":"view"},
     ]
 } as const;
