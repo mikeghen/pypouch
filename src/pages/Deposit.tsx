@@ -35,17 +35,18 @@ const Deposit = () => {
     token: pyusdContractConfig.address,
   });
 
-  const { data: allowance, refetch: refetchAllowance } = useReadContract({
+  const { data: allowance } = useReadContract({
     ...pyusdContractConfig,
     functionName: 'allowance',
     args: [address!, pyPouchContractConfig.address],
+    enabled: !!address,
   });
 
   useEffect(() => {
     if (allowance !== undefined && amount) {
       try {
         const amountInBaseUnits = parseUnits(amount, 6);
-        setNeedsApproval(BigInt(allowance) < amountInBaseUnits);
+        setNeedsApproval(amountInBaseUnits > allowance);
       } catch (e) {
         // Invalid amount input, keep approval needed
         setNeedsApproval(true);
@@ -55,9 +56,12 @@ const Deposit = () => {
 
   useEffect(() => {
     if (isApproveSuccess) {
-      refetchAllowance();
+      toast({
+        title: "Approval Successful",
+        description: "You can now deposit your PYUSD"
+      });
     }
-  }, [isApproveSuccess, refetchAllowance]);
+  }, [isApproveSuccess, toast]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
