@@ -67,6 +67,7 @@ export const DepositForm = () => {
           hash={depositState.hash}
           isConfirming={depositState.isConfirming}
           isSuccess={depositState.isSuccess}
+          isPending={depositState.isPending}
           action="Deposit"
         />
       ) : (
@@ -75,6 +76,7 @@ export const DepositForm = () => {
           hash={approveState.hash}
           isConfirming={approveState.isConfirming}
           isSuccess={approveState.isSuccess}
+          isPending={approveState.isPending}
           action="Approve"
         />
       )}

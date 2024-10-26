@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useWriteContract, useWaitForTransactionReceipt, useAccount, useConfig } from 'wagmi';
 import { parseUnits } from "viem";
 import { pyusdContractConfig, pyPouchContractConfig } from "@/config/contracts";
@@ -10,20 +10,41 @@ export const useDepositActions = (amount: string) => {
   const [needsApproval, setNeedsApproval] = useState(true);
 
   // Approval transaction state
-  const { writeContract: writeApprove, data: approveHash } = useWriteContract();
+  const { writeContract: writeApprove, data: approveHash, isPending: isApprovePending } = useWriteContract();
   const { isLoading: isApproveConfirming, isSuccess: isApproveSuccess } = useWaitForTransactionReceipt({
     hash: approveHash,
   });
 
   // Deposit transaction state
-  const { writeContract: writeDeposit, data: depositHash } = useWriteContract();
+  const { writeContract: writeDeposit, data: depositHash, isPending: isDepositPending } = useWriteContract();
   const { isLoading: isDepositConfirming, isSuccess: isDepositSuccess } = useWaitForTransactionReceipt({
     hash: depositHash,
   });
 
+  // Effect to show toasts for approve transaction
+  useEffect(() => {
+    if (approveHash) {
+      toast.loading("Approving transaction...");
+    }
+    if (isApproveSuccess) {
+      toast.success("Approval successful! You can now deposit.");
+      setNeedsApproval(false);
+    }
+  }, [approveHash, isApproveSuccess]);
+
+  // Effect to show toasts for deposit transaction
+  useEffect(() => {
+    if (depositHash) {
+      toast.loading("Depositing PYUSD...");
+    }
+    if (isDepositSuccess) {
+      toast.success("Deposit successful!");
+    }
+  }, [depositHash, isDepositSuccess]);
+
   const handleApprove = async () => {
     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
-      toast.error('Please enter a valid amount');
+      toast.error("Please enter a valid amount");
       return;
     }
 
@@ -35,16 +56,15 @@ export const useDepositActions = (amount: string) => {
         chain: config.chains[0],
         account: address,
       });
-      setNeedsApproval(false);
     } catch (error) {
       console.error('Approval error:', error);
-      toast.error('Something went wrong with the approval');
+      toast.error("Failed to approve transaction");
     }
   };
 
   const handleDeposit = async () => {
     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
-      toast.error('Please enter a valid amount');
+      toast.error("Please enter a valid amount");
       return;
     }
 
@@ -58,7 +78,7 @@ export const useDepositActions = (amount: string) => {
       });
     } catch (error) {
       console.error('Deposit error:', error);
-      toast.error('Something went wrong with the deposit');
+      toast.error("Failed to deposit PYUSD");
     }
   };
 
@@ -70,11 +90,13 @@ export const useDepositActions = (amount: string) => {
       hash: approveHash,
       isConfirming: isApproveConfirming,
       isSuccess: isApproveSuccess,
+      isPending: isApprovePending
     },
     depositState: {
       hash: depositHash,
       isConfirming: isDepositConfirming,
       isSuccess: isDepositSuccess,
+      isPending: isDepositPending
     },
   };
 };
