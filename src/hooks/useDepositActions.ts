@@ -49,86 +49,6 @@ export const useDepositActions = (amount: string) => {
     }
   }, [isApproveSuccess, refetchAllowance]);
 
-  // Toast notifications for approve transaction
-  useEffect(() => {
-    if (approveHash) {
-      toast({
-        title: "Approval Submitted",
-        description: (
-          <div className="flex flex-col gap-1">
-            <span>Transaction Hash:</span>
-            <a 
-              href={`https://etherscan.io/tx/${approveHash}`} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-blue-500 hover:text-blue-700 underline"
-            >
-              {`${approveHash.slice(0, 6)}...${approveHash.slice(-4)}`}
-            </a>
-          </div>
-        )
-      });
-    }
-  }, [approveHash, toast]);
-
-  useEffect(() => {
-    if (isApproveConfirming) {
-      toast({
-        title: "Confirming Approval",
-        description: "Please wait while the approval transaction is being confirmed..."
-      });
-    }
-  }, [isApproveConfirming, toast]);
-
-  useEffect(() => {
-    if (isApproveSuccess) {
-      toast({
-        title: "Approval Successful",
-        description: "You can now deposit your PYUSD"
-      });
-    }
-  }, [isApproveSuccess, toast]);
-
-  // Toast notifications for deposit transaction
-  useEffect(() => {
-    if (depositHash) {
-      toast({
-        title: "Deposit Submitted",
-        description: (
-          <div className="flex flex-col gap-1">
-            <span>Transaction Hash:</span>
-            <a 
-              href={`https://etherscan.io/tx/${depositHash}`} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-blue-500 hover:text-blue-700 underline"
-            >
-              {`${depositHash.slice(0, 6)}...${depositHash.slice(-4)}`}
-            </a>
-          </div>
-        )
-      });
-    }
-  }, [depositHash, toast]);
-
-  useEffect(() => {
-    if (isDepositConfirming) {
-      toast({
-        title: "Confirming Deposit",
-        description: "Please wait while your deposit is being confirmed..."
-      });
-    }
-  }, [isDepositConfirming, toast]);
-
-  useEffect(() => {
-    if (isDepositSuccess) {
-      toast({
-        title: "Deposit Successful",
-        description: "Your PYUSD has been successfully deposited!"
-      });
-    }
-  }, [isDepositSuccess, toast]);
-
   const handleApprove = () => {
     if (isApprovePending || isApproveConfirming) return;
     
@@ -142,8 +62,8 @@ export const useDepositActions = (amount: string) => {
       });
     } catch (error) {
       toast({
-        title: "Approval Failed",
-        description: "An error occurred during approval. Please try again.",
+        title: "Approval failed",
+        description: "An error occurred during approval.",
         variant: "destructive",
       });
     }
@@ -162,8 +82,8 @@ export const useDepositActions = (amount: string) => {
       });
     } catch (error) {
       toast({
-        title: "Deposit Failed",
-        description: "An error occurred during deposit. Please try again.",
+        title: "Deposit failed",
+        description: "An error occurred during deposit.",
         variant: "destructive",
       });
     }
