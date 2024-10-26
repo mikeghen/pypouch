@@ -33,6 +33,9 @@ export const DepositForm = () => {
     e.preventDefault();
   };
 
+  // Determine which action to show based on approval state
+  const showDepositButton = !needsApproval || approveState.isSuccess;
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
@@ -58,16 +61,7 @@ export const DepositForm = () => {
           </p>
         </div>
       </div>
-      {needsApproval ? (
-        <TransactionButton
-          onClick={handleApprove}
-          hash={approveState.hash}
-          isPending={approveState.isPending}
-          isConfirming={approveState.isConfirming}
-          isSuccess={approveState.isSuccess}
-          action="Approve"
-        />
-      ) : (
+      {showDepositButton ? (
         <TransactionButton
           onClick={handleDeposit}
           hash={depositState.hash}
@@ -75,7 +69,15 @@ export const DepositForm = () => {
           isConfirming={depositState.isConfirming}
           isSuccess={depositState.isSuccess}
           action="Deposit"
-          disabled={!approveState.isSuccess && needsApproval}
+        />
+      ) : (
+        <TransactionButton
+          onClick={handleApprove}
+          hash={approveState.hash}
+          isPending={approveState.isPending}
+          isConfirming={approveState.isConfirming}
+          isSuccess={approveState.isSuccess}
+          action="Approve"
         />
       )}
     </form>
