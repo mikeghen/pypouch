@@ -2,7 +2,11 @@ import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { mainnet } from 'wagmi/chains';
 import { http } from 'viem';
 
-const rpcUrl = "https://rpc.tenderly.co/fork/1e7bdf7c-e80b-4fb9-abe2-d628d62a1f70";
+const rpcUrl = process.env.VITE_PUBLIC_RPC_URL as string;
+
+if (!rpcUrl) {
+  throw new Error('VITE_PUBLIC_RPC_URL environment variable is not set');
+}
 
 // Configure the mainnet chain with custom RPC URL
 const configuredMainnet = {
