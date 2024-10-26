@@ -121,7 +121,6 @@ const Send = () => {
             <TransactionButton
               onClick={handleSend}
               hash={hash}
-              isPending={isPending}
               isConfirming={isConfirming}
               isSuccess={isSuccess}
               action="Send"

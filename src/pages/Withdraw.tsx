@@ -17,7 +17,7 @@ const Withdraw = () => {
   const config = useConfig();
   const [amount, setAmount] = useState('');
 
-  const { writeContract: writeWithdraw, data: withdrawHash, isPending } = useWriteContract();
+  const { writeContract: writeWithdraw, data: withdrawHash } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash: withdrawHash,
   });
@@ -98,7 +98,6 @@ const Withdraw = () => {
             <TransactionButton
               onClick={handleWithdraw}
               hash={withdrawHash}
-              isPending={isPending}
               isConfirming={isConfirming}
               isSuccess={isSuccess}
               action="Withdraw"
