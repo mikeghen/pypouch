@@ -55,11 +55,6 @@ const Deposit = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (needsApproval) {
-      handleApprove();
-    } else {
-      handleDeposit();
-    }
   };
 
   const handleApprove = () => {
