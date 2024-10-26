@@ -39,20 +39,30 @@ const Deposit = () => {
     ...pyusdContractConfig,
     functionName: 'allowance',
     args: [address!, pyPouchContractConfig.address],
-    enabled: !!address,
   });
 
   useEffect(() => {
+    console.log('[Deposit] Current allowance:', allowance);
+    console.log('[Deposit] Current amount:', amount);
+    console.log('[Deposit] User address:', address);
+    console.log('[Deposit] PyPouch address:', pyPouchContractConfig.address);
+
     if (allowance !== undefined && amount) {
       try {
         const amountInBaseUnits = parseUnits(amount, 6);
+        console.log('[Deposit] Amount in base units:', amountInBaseUnits.toString());
+        console.log('[Deposit] Allowance comparison:', {
+          allowance: allowance.toString(),
+          amountInBaseUnits: amountInBaseUnits.toString(),
+          needsApproval: amountInBaseUnits > allowance
+        });
         setNeedsApproval(amountInBaseUnits > allowance);
       } catch (e) {
-        // Invalid amount input, keep approval needed
+        console.error('[Deposit] Error parsing amount:', e);
         setNeedsApproval(true);
       }
     }
-  }, [allowance, amount]);
+  }, [allowance, amount, address]);
 
   useEffect(() => {
     if (isApproveSuccess) {
@@ -71,6 +81,7 @@ const Deposit = () => {
     if (isApprovePending || isApproveConfirming) return;
     
     try {
+      console.log('[Deposit] Initiating approval for amount:', amount);
       writeApprove({
         ...pyusdContractConfig,
         functionName: 'approve',
@@ -79,6 +90,7 @@ const Deposit = () => {
         chain: config.chains[0],
       });
     } catch (error) {
+      console.error('[Deposit] Approval error:', error);
       toast({
         title: "Approval failed",
         description: "An error occurred during approval.",
@@ -91,6 +103,7 @@ const Deposit = () => {
     if (isDepositPending || isDepositConfirming) return;
     
     try {
+      console.log('[Deposit] Initiating deposit for amount:', amount);
       writeDeposit({
         ...pyPouchContractConfig,
         functionName: 'deposit',
@@ -99,6 +112,7 @@ const Deposit = () => {
         chain: config.chains[0],
       });
     } catch (error) {
+      console.error('[Deposit] Deposit error:', error);
       toast({
         title: "Deposit failed",
         description: "An error occurred during deposit.",
@@ -180,6 +194,7 @@ const Deposit = () => {
       </div>
     </div>
   );
+
 };
 
 export default Deposit;
