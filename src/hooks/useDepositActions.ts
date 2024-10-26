@@ -23,24 +23,30 @@ export const useDepositActions = (amount: string) => {
 
   // Effect to show toasts for approve transaction
   useEffect(() => {
+    let loadingToast;
     if (approveHash) {
-      toast.loading("Approving transaction...");
+      loadingToast = toast.loading("Approving transaction...");
     }
     if (isApproveSuccess) {
-      toast.success("Approval successful! You can now deposit.");
+      toast.success("Approval successful! You can now deposit.", { id: loadingToast });
       setNeedsApproval(false);
+    } else if (!isApprovePending && approveHash) {
+      toast.error("Approval failed", { id: loadingToast });
     }
-  }, [approveHash, isApproveSuccess]);
+  }, [approveHash, isApproveSuccess, isApprovePending]);
 
   // Effect to show toasts for deposit transaction
   useEffect(() => {
+    let loadingToast;
     if (depositHash) {
-      toast.loading("Depositing PYUSD...");
+      loadingToast = toast.loading("Depositing PYUSD...");
     }
     if (isDepositSuccess) {
-      toast.success("Deposit successful!");
+      toast.success("Deposit successful!", { id: loadingToast });
+    } else if (!isDepositPending && depositHash) {
+      toast.error("Deposit failed", { id: loadingToast });
     }
-  }, [depositHash, isDepositSuccess]);
+  }, [depositHash, isDepositSuccess, isDepositPending]);
 
   const handleApprove = async () => {
     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {

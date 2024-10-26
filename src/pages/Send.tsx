@@ -123,6 +123,7 @@ const Send = () => {
               hash={hash}
               isConfirming={isConfirming}
               isSuccess={isSuccess}
+              isPending={isPending}
               action="Send"
             />
           </form>

@@ -2,7 +2,7 @@ import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { mainnet } from 'wagmi/chains';
 import { http } from 'viem';
 
-const rpcUrl = process.env.VITE_PUBLIC_RPC_URL as string;
+const rpcUrl = import.meta.env.VITE_PUBLIC_RPC_URL as string;
 
 if (!rpcUrl) {
   throw new Error('VITE_PUBLIC_RPC_URL environment variable is not set');
@@ -33,6 +33,7 @@ export const wagmiConfig = getDefaultConfig({
 });
 
 export const PYUSD_ADDRESS = '0x6c3ea9036406852006290770BEdFcAbA0e23A0e8';
+export const APYUSD_ADDRESS = '0x0c0d01abf3e6adfca0989ebba9d6e85dd58eab1e';
 
 export const PYUSD_ABI = [
   'function transfer(address to, uint256 amount) returns (bool)',

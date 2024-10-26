@@ -9,8 +9,7 @@ import { format } from 'date-fns';
 import { CHUNK_SIZE, TOTAL_BLOCKS } from '@/utils/constants';
 import { fetchTransferLogs } from '@/utils/transferLogs';
 import { TransactionTable } from './TransactionTable';
-
-const APYUSD_ADDRESS = '0x0C0d01AbF3e6aDfcA0989eBbA9d6e85dD58EaB1E';
+import { PYPOUCH_CONTRACT_ADDRESS } from '@/config/contracts';
 
 const TransactionHistory = () => {
   const { toast } = useToast();
@@ -46,7 +45,7 @@ const TransactionHistory = () => {
         .map((event, index) => {
           const isIncoming = event.args.to?.toLowerCase() === address.toLowerCase();
           const amount = Number(formatUnits(event.args.value || 0n, 6)).toFixed(2);
-          const isDeposit = event.args.to?.toLowerCase() === APYUSD_ADDRESS.toLowerCase();
+          const isDeposit = event.args.to?.toLowerCase() === PYPOUCH_CONTRACT_ADDRESS.toLowerCase();
           
           let type = isIncoming ? 'Receive' : (isDeposit ? 'Deposit' : 'Send');
           

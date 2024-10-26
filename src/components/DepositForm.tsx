@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { WalletIcon } from "lucide-react";
-import { useBalance, useAccount } from 'wagmi';
-import { pyusdContractConfig } from "@/config/contracts";
+import { useBalance, useAccount, useReadContract } from 'wagmi';
+import { pyusdContractConfig, pyPouchContractConfig } from "@/config/contracts";
 import { TransactionButton } from "@/components/TransactionButton";
 import { useDepositActions } from "@/hooks/useDepositActions";
 
@@ -23,6 +23,25 @@ export const DepositForm = () => {
     depositState,
   } = useDepositActions(amount);
 
+  // Read allowance from the contract
+  const { data: allowanceData } = useReadContract({
+    address: pyusdContractConfig.address,
+    abi: pyusdContractConfig.abi,
+    functionName: "allowance",
+    args: [address, pyPouchContractConfig.address],
+  });
+
+  // Determine if the allowance is sufficient
+  const [isAllowanceSufficient, setIsAllowanceSufficient] = useState(false);
+
+  useEffect(() => {
+    if (allowanceData && amount) {
+      const allowance = BigInt(allowanceData);
+      const inputAmount = BigInt(parseFloat(amount) * 10**6); // Assuming 6 decimal places
+      setIsAllowanceSufficient(allowance >= inputAmount);
+    }
+  }, [allowanceData, amount]);
+
   const handleBalanceClick = () => {
     if (pyusdBalance) {
       setAmount(pyusdBalance.formatted);
@@ -33,8 +52,8 @@ export const DepositForm = () => {
     e.preventDefault();
   };
 
-  // Determine which action to show based on approval state
-  const showDepositButton = !needsApproval || approveState.isSuccess;
+  // Determine which action to show based on approval state and allowance
+  const showDepositButton = isAllowanceSufficient || approveState.isSuccess;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">

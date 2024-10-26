@@ -6,15 +6,14 @@ import { useNavigate } from "react-router-dom";
 import { WalletConnect } from "@/components/WalletConnect";
 import { useAccount, useBalance } from 'wagmi';
 import { useAaveAPY } from "@/hooks/useAaveAPY";
-import { PYUSD_ADDRESS } from "@/config/wagmi";
-
-const APYUSD_ADDRESS = '0x0c0d01abf3e6adfca0989ebba9d6e85dd58eab1e';
+import { PYUSD_ADDRESS, APYUSD_ADDRESS } from "@/config/wagmi";
+import { PYPOUCH_CONTRACT_ADDRESS } from "@/config/contracts";
 
 const Index = () => {
   const navigate = useNavigate();
   const { address } = useAccount();
   const { data: aPYUSDBalance } = useBalance({
-    address,
+    address: PYPOUCH_CONTRACT_ADDRESS,
     token: APYUSD_ADDRESS
   });
   const { data: pyusdBalance } = useBalance({
