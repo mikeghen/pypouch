@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { useWriteContract, useWaitForTransactionReceipt, useAccount, useReadContract } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt, useAccount, useReadContract, useConfig } from 'wagmi';
 import { TransactionButton } from "@/components/TransactionButton";
 import { pyPouchContractConfig } from "@/config/contracts";
 import { parseUnits, formatUnits } from "viem";
@@ -14,6 +14,7 @@ const Withdraw = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { address } = useAccount();
+  const config = useConfig();
   const [amount, setAmount] = useState('');
 
   const { writeContract: writeWithdraw, data: withdrawHash, isPending } = useWriteContract();
@@ -38,6 +39,8 @@ const Withdraw = () => {
         ...pyPouchContractConfig,
         functionName: 'withdraw',
         args: [parseUnits(amount || '0', 6), address!],
+        account: address,
+        chain: config.chains[0],
       });
     } catch (error) {
       toast({
