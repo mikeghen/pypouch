@@ -16,6 +16,7 @@ import { TransactionButton } from "@/components/TransactionButton";
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { aavePoolConfig } from "@/config/contracts";
 import { toast } from "sonner";
+import { mainnet } from "wagmi/chains";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -52,7 +53,6 @@ const Index = () => {
   const { data: aPYUSDBalance } = useBalance({
     address: pyPouchAddress!,
     token: APYUSD_ADDRESS,
-    enabled: !!pyPouchAddress
   });
   const { data: pyusdBalance } = useBalance({
     address,
@@ -96,6 +96,8 @@ const Index = () => {
           APYUSD_ADDRESS,
           aavePoolConfig.address
         ],
+        account: address,
+        chain: mainnet
       });
     } catch (error) {
       console.error('Failed to create PyPouch:', error);
@@ -124,7 +126,7 @@ const Index = () => {
             <TransactionButton
               onClick={handleCreatePyPouch}
               hash={hash}
-              isLoading={isLoading}
+              isConfirming={isLoading}
               isSuccess={isSuccess}
               isPending={isPending}
               action="Create PyPouch"
@@ -156,7 +158,14 @@ const Index = () => {
                 <h3 className="text-sm font-medium text-gray-500">Savings</h3>
                 <div className="flex items-baseline">
                   <span className="text-3xl font-bold">
-                    {aPYUSDBalance ? Number(aPYUSDBalance.formatted).toFixed(2) : '0.00'}
+                    {aPYUSDBalance ? (
+                      <>
+                        {Number(aPYUSDBalance.formatted).toFixed(2)}
+                        <span className="text-gray-400">
+                          {Number(aPYUSDBalance.formatted).toFixed(6).slice(-4)}
+                        </span>
+                      </>
+                    ) : '0.000000'}
                   </span>
                   <span className="text-lg ml-2 text-gray-600">PYUSD</span>
                 </div>

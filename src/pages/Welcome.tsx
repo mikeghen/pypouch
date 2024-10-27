@@ -11,6 +11,7 @@ import { PYUSD_ADDRESS, APYUSD_ADDRESS } from "@/config/wagmi";
 import { aavePoolConfig } from "@/config/contracts";
 import { toast } from "sonner";
 import { TransactionButton } from "@/components/TransactionButton";
+import { mainnet } from 'wagmi/chains';
 
 const Welcome = () => {
   const navigate = useNavigate();
@@ -75,6 +76,8 @@ const Welcome = () => {
           APYUSD_ADDRESS,
           aavePoolConfig.address
         ],
+        chain: mainnet,
+        account: address
       });
     } catch (error) {
       console.error('Failed to create PyPouch:', error);

@@ -4,33 +4,32 @@ import { Hash } from "viem";
 import { Loader2 } from "lucide-react";
 
 interface TransactionButtonProps {
-  onClick: () => void;
-  hash: Hash | undefined;
-  isConfirming: boolean;
-  isSuccess: boolean;
-  isPending: boolean;
+  onClick: (e?: React.FormEvent) => void;
+  hash?: `0x${string}`;
+  isConfirming?: boolean;
+  isSuccess?: boolean;
+  isPending?: boolean;
+  isLoading?: boolean;
   action: string;
-  disabled?: boolean;
 }
 
-export const TransactionButton = ({
+export const TransactionButton: React.FC<TransactionButtonProps> = ({
   onClick,
   hash,
   isConfirming,
   isSuccess,
   isPending,
-  action,
-  disabled
-}: TransactionButtonProps) => {
-  const isLoading = isPending || isConfirming;
-  const buttonText = isPending ? "Confirm in Wallet..." : 
+  isLoading,
+  action
+}) => {
+  const buttonText = isLoading ? "Confirm in Wallet..." : 
                     isConfirming ? "Processing..." : 
                     action;
 
   return (
     <Button
       onClick={onClick}
-      disabled={isLoading || disabled || isSuccess}
+      disabled={isLoading}
       className="w-full"
     >
       {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

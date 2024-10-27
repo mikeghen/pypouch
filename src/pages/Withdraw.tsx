@@ -23,7 +23,6 @@ const Withdraw = () => {
   const { data: pyusdBalance } = useBalance({
     address: pyPouchAddress!,
     token: APYUSD_ADDRESS,
-    enabled: !!pyPouchAddress
   });
 
   const { handleWithdraw, withdrawState } = useWithdrawActions(amount);
@@ -73,7 +72,7 @@ const Withdraw = () => {
               Earn {apy.toFixed(2)}% APY from Aave
             </p>
           )}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="amount" className="text-sm font-medium">
                 Amount (PYUSD)
@@ -98,6 +97,7 @@ const Withdraw = () => {
               </div>
             </div>
             <TransactionButton
+              onClick={handleSubmit}
               hash={withdrawState.hash}
               isConfirming={withdrawState.isConfirming}
               isSuccess={withdrawState.isSuccess}

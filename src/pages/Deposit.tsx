@@ -15,7 +15,6 @@ const Deposit = () => {
   const { data: pyusdBalance } = useBalance({
     address: pyPouchAddress!,
     token: APYUSD_ADDRESS,
-    enabled: !!pyPouchAddress
   });
 
   return (

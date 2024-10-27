@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "build:dev": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate-pwa-assets": "pwa-assets-generator --preset minimal public/logo.svg"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -64,7 +65,9 @@
     "vaul": "^0.9.3",
     "viem": "^2.21.33",
     "wagmi": "^2.12.24",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "vite-plugin-pwa": "^0.19.0",
+    "@vite-pwa/assets-generator": "^0.2.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

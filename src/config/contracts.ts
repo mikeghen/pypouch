@@ -1,4 +1,4 @@
-export const PYUSD_ADDRESS = '0x6c3ea9036406852006290770BEdFcAbA0e23A0e8';
+export const PYUSD_ADDRESS = '0x6c3ea9036406852006290770BEdFcAbA0e23A0e8' as `0x${string}`;
 
 // PYUSD Token Configuration
 export const pyusdContractConfig = {
@@ -12,7 +12,7 @@ export const pyusdContractConfig = {
 } as const;
 
 // PyPouchFactory Configuration
-export const PYPOUCH_FACTORY_ADDRESS = '0x9e42737Bc5FCEE35bcCe8B8F277F266C01a20817';
+export const PYPOUCH_FACTORY_ADDRESS = '0x9e42737Bc5FCEE35bcCe8B8F277F266C01a20817' as `0x${string}`;
 
 export const pyPouchFactoryConfig = {
     address: PYPOUCH_FACTORY_ADDRESS,
@@ -48,7 +48,7 @@ export const pyPouchConfig = {
 } as const;
 
 export const aavePoolConfig = {
-    address: '0x87870bca3f3fd6335c3f4ce8392d69350b4fa4e2' as const,
+    address: '0x87870bca3f3fd6335c3f4ce8392d69350b4fa4e2' as `0x${string}`,
     abi: [
         {
             "inputs": [
