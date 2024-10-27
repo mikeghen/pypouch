@@ -2,14 +2,15 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { WalletIcon } from "lucide-react";
 import { useBalance, useAccount, useReadContract } from 'wagmi';
-import { pyusdContractConfig, pyPouchContractConfig } from "@/config/contracts";
+import { pyusdContractConfig, pyPouchConfig } from "@/config/contracts";
 import { TransactionButton } from "@/components/TransactionButton";
 import { useDepositActions } from "@/hooks/useDepositActions";
+import { usePyPouch } from "@/contexts/PyPouchContext";
 
 export const DepositForm = () => {
   const [amount, setAmount] = useState('');
   const { address } = useAccount();
-
+  const { pyPouchAddress } = usePyPouch();
   const { data: pyusdBalance } = useBalance({
     address,
     token: pyusdContractConfig.address,
@@ -28,7 +29,7 @@ export const DepositForm = () => {
     address: pyusdContractConfig.address,
     abi: pyusdContractConfig.abi,
     functionName: "allowance",
-    args: [address, pyPouchContractConfig.address],
+    args: [address, pyPouchAddress],
   });
 
   // Determine if the allowance is sufficient

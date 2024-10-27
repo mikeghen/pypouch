@@ -9,17 +9,18 @@ import { format } from 'date-fns';
 import { CHUNK_SIZE, TOTAL_BLOCKS } from '@/utils/constants';
 import { fetchTransferLogs } from '@/utils/transferLogs';
 import { TransactionTable } from './TransactionTable';
-import { PYPOUCH_CONTRACT_ADDRESS } from '@/config/contracts';
+import { usePyPouch } from '@/contexts/PyPouchContext';
 
 const TransactionHistory = () => {
   const { toast } = useToast();
   const { address } = useAccount();
   const publicClient = usePublicClient();
+  const { pyPouchAddress } = usePyPouch();
 
   const { data: transactions = [], isLoading } = useQuery({
     queryKey: ['pyusd-transfers', address],
     queryFn: async () => {
-      if (!address) return [];
+      if (!address || !pyPouchAddress) return [];
 
       const latestBlock = await publicClient.getBlockNumber();
       const chunks = [];
@@ -29,8 +30,13 @@ const TransactionHistory = () => {
       for (let i = 0; i < numChunks; i++) {
         const fromBlock = latestBlock - TOTAL_BLOCKS + (BigInt(i) * CHUNK_SIZE);
         const toBlock = fromBlock + CHUNK_SIZE - 1n;
-        chunks.push(fetchTransferLogs(publicClient, address, fromBlock, toBlock));
-        // Sleep for 100ms to avoid rate limiting
+        chunks.push(fetchTransferLogs({
+          publicClient,
+          address,
+          fromBlock,
+          toBlock,
+          pyPouchAddress
+        }));
         await new Promise(resolve => setTimeout(resolve, 100));
       }
 
@@ -47,8 +53,8 @@ const TransactionHistory = () => {
         .map((event, index) => {
           const isIncoming = event.args.to?.toLowerCase() === address.toLowerCase();
           const amount = Number(formatUnits(event.args.value || event.args.yield || 0n, 6)).toFixed(6); 
-          const isDeposit = event.args.to?.toLowerCase() === PYPOUCH_CONTRACT_ADDRESS.toLowerCase();
-          const isWithdraw = event.args.from?.toLowerCase() === PYPOUCH_CONTRACT_ADDRESS.toLowerCase() && isIncoming;
+          const isDeposit = event.args.to?.toLowerCase() === pyPouchAddress.toLowerCase();
+          const isWithdraw = event.args.from?.toLowerCase() === pyPouchAddress.toLowerCase() && isIncoming;
           const isEarned = event.eventName === 'YieldEarned';
           
           let type;
@@ -68,7 +74,7 @@ const TransactionHistory = () => {
             id: `${event.blockNumber}-${event.logIndex}`,
             date: new Date(Number(blocks[index].timestamp) * 1000),
             type,
-            amount: `${isIncoming || isEarned ? '+' : '-'}${amount}`, // Adjust sign for Earned
+            amount: `${isIncoming || isEarned ? '+' : '-'}${amount}`,
             from: event.args.from,
             to: event.args.to,
             hash: event.transactionHash
@@ -76,7 +82,7 @@ const TransactionHistory = () => {
         })
         .sort((a, b) => b.date.getTime() - a.date.getTime());
     },
-    enabled: !!address,
+    enabled: !!address && !!pyPouchAddress,
   });
 
   const downloadCSV = () => {

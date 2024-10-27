@@ -1,6 +1,6 @@
 export const PYUSD_ADDRESS = '0x6c3ea9036406852006290770BEdFcAbA0e23A0e8';
-export const PYPOUCH_CONTRACT_ADDRESS = '0xb41174D2c1a587f894F5584748e1D30f3781e348';
 
+// PYUSD Token Configuration
 export const pyusdContractConfig = {
     address: PYUSD_ADDRESS,
     abi: [
@@ -11,13 +11,39 @@ export const pyusdContractConfig = {
     ]
 } as const;
 
-export const pyPouchContractConfig = {
-    address: PYPOUCH_CONTRACT_ADDRESS,
+// PyPouchFactory Configuration
+export const PYPOUCH_FACTORY_ADDRESS = '0x9e42737Bc5FCEE35bcCe8B8F277F266C01a20817';
+
+export const pyPouchFactoryConfig = {
+    address: PYPOUCH_FACTORY_ADDRESS,
+    abi: [
+        {
+            "inputs": [
+                { "internalType": "address", "name": "_pyusdToken", "type": "address" },
+                { "internalType": "address", "name": "_aPYUSD", "type": "address" },
+                { "internalType": "address", "name": "_aavePool", "type": "address" }
+            ],
+            "name": "createPyPouch",
+            "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [{ "internalType": "address", "name": "owner", "type": "address" }],
+            "name": "getPyPouchAddress",
+            "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+            "stateMutability": "view",
+            "type": "function"
+        }
+    ]
+} as const;
+
+// PyPouch Instance Configuration
+export const pyPouchConfig = {
     abi: [
         {"type":"function","name":"deposit","inputs":[{"name":"amount","type":"uint256"}],"outputs":[],"stateMutability":"nonpayable"},
-        {"type":"function","name":"withdraw","inputs":[{"name":"amount","type":"uint256"},{"name":"receiver","type":"address"}],"outputs":[],"stateMutability":"nonpayable"},
-        {"type":"function","name":"getNetDeposits","inputs":[{"name":"user","type":"address"}],"outputs":[{"name":"","type":"uint256"}],"stateMutability":"view"},
-        {"type":"function","name":"getAPYUSDBalance","inputs":[],"outputs":[{"name":"","type":"uint256"}],"stateMutability":"view"},
+        {"type":"function","name":"withdraw","inputs":[{"name":"amount","type":"uint256"},{"name":"to","type":"address"}],"outputs":[],"stateMutability":"nonpayable"},
+        {"type":"function","name":"initialize","inputs":[{"name":"owner","type":"address"},{"name":"pyusdToken","type":"address"},{"name":"aPYUSD","type":"address"},{"name":"aavePool","type":"address"}],"outputs":[],"stateMutability":"nonpayable"},
     ]
 } as const;
 
@@ -39,10 +65,10 @@ export const aavePoolConfig = {
                         {
                             "components": [
                                 {
-                                    "internalType": "uint256",
-                                    "name": "data",
-                                    "type": "uint256"
-                                }
+                                "internalType": "uint256",
+                                "name": "data",
+                                "type": "uint256"
+                            }
                             ],
                             "internalType": "struct DataTypes.ReserveConfigurationMap",
                             "name": "configuration",

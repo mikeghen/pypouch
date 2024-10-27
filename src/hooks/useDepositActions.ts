@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useWriteContract, useWaitForTransactionReceipt, useAccount, useConfig } from 'wagmi';
 import { parseUnits } from "viem";
-import { pyusdContractConfig, pyPouchContractConfig } from "@/config/contracts";
+import { pyusdContractConfig, pyPouchConfig } from "@/config/contracts";
 import { toast } from "sonner";
+import { usePyPouch } from "@/contexts/PyPouchContext";
 
 export const useDepositActions = (amount: string) => {
   const { address } = useAccount();
+  const { pyPouchAddress } = usePyPouch();
   const config = useConfig();
   const [needsApproval, setNeedsApproval] = useState(true);
 
@@ -82,7 +84,7 @@ export const useDepositActions = (amount: string) => {
       writeApprove({
         ...pyusdContractConfig,
         functionName: 'approve',
-        args: [pyPouchContractConfig.address, parseUnits(amount, 6)],
+        args: [pyPouchAddress, parseUnits(amount, 6)],
         chain: config.chains[0],
         account: address,
       });
@@ -103,7 +105,8 @@ export const useDepositActions = (amount: string) => {
     try {
       console.log('Initiating deposit for amount:', amount);
       writeDeposit({
-        ...pyPouchContractConfig,
+        ...pyPouchConfig,
+        address: pyPouchAddress,
         functionName: 'deposit',
         args: [parseUnits(amount, 6)],
         chain: config.chains[0],

@@ -6,14 +6,16 @@ import { useAaveAPY } from "@/hooks/useAaveAPY";
 import { DepositForm } from "@/components/DepositForm";
 import { useBalance } from 'wagmi';
 import { APYUSD_ADDRESS } from "@/config/wagmi";
-import { PYPOUCH_CONTRACT_ADDRESS } from "@/config/contracts";
+import { usePyPouch } from '@/contexts/PyPouchContext';
 
 const Deposit = () => {
   const navigate = useNavigate();
   const apy = useAaveAPY();
+  const { pyPouchAddress } = usePyPouch();
   const { data: pyusdBalance } = useBalance({
-    address: PYPOUCH_CONTRACT_ADDRESS,
-    token: APYUSD_ADDRESS
+    address: pyPouchAddress!,
+    token: APYUSD_ADDRESS,
+    enabled: !!pyPouchAddress
   });
 
   return (

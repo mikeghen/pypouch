@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, WalletIcon } from "lucide-react";
+import { ArrowLeftIcon, WalletIcon, ScanIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { pyusdContractConfig } from "@/config/contracts";
 import { parseUnits } from "viem";
 import { useState } from "react";
 import { PYUSD_ADDRESS } from "@/config/wagmi";
+import QrScanner from 'react-qr-scanner';
 
 const Send = () => {
   const navigate = useNavigate();
@@ -22,16 +23,12 @@ const Send = () => {
   });
   const [recipientAddress, setRecipientAddress] = useState('');
   const [amount, setAmount] = useState('');
+  const [showScanner, setShowScanner] = useState(false);
 
   const { data: pyusdBalance } = useBalance({
     address,
     token: PYUSD_ADDRESS,
   });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    handleSend();
-  };
 
   const handleSend = () => {
     console.log('[Send] Initiating send transaction');
@@ -65,6 +62,22 @@ const Send = () => {
     }
   };
 
+  const handleScan = (result: any) => {
+    if (result) {
+      setRecipientAddress(result.text);
+      setShowScanner(false);
+    }
+  };
+
+  const handleError = (error: any) => {
+    console.error(error);
+    toast({
+      title: "Scan failed",
+      description: "Failed to scan QR code.",
+      variant: "destructive",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-md mx-auto">
@@ -80,19 +93,30 @@ const Send = () => {
         <Card className="p-6">
           <h2 className="text-2xl font-bold mb-6">Send PYUSD</h2>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="recipient" className="text-sm font-medium">
                 Recipient Address
               </label>
-              <Input
-                id="recipient"
-                type="text"
-                placeholder="Enter recipient address"
-                value={recipientAddress}
-                onChange={(e) => setRecipientAddress(e.target.value)}
-                required
-              />
+              <div className="relative">
+                <Input
+                  id="recipient"
+                  type="text"
+                  placeholder="Enter recipient address"
+                  value={recipientAddress}
+                  onChange={(e) => setRecipientAddress(e.target.value)}
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-2 top-1/2 -translate-y-1/2"
+                  onClick={() => setShowScanner(true)}
+                >
+                  <ScanIcon className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
             <div className="space-y-2">
               <label htmlFor="amount" className="text-sm font-medium">
@@ -118,6 +142,29 @@ const Send = () => {
                 </p>
               </div>
             </div>
+            {showScanner && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                <div className="bg-white p-4 rounded-lg w-full max-w-sm">
+                  <h3 className="text-lg font-medium mb-4">Scan QR Code</h3>
+                  <div className="relative aspect-square w-full">
+                    <QrScanner
+                      onScan={handleScan}
+                      onError={handleError}
+                      style={{ width: '100%' }}
+                      constraints={{
+                        video: { facingMode: 'environment' }
+                      }}
+                    />
+                  </div>
+                  <Button
+                    className="mt-4 w-full"
+                    onClick={() => setShowScanner(false)}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
             <TransactionButton
               onClick={handleSend}
               hash={hash}

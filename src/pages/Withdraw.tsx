@@ -9,9 +9,9 @@ import { TransactionButton } from "@/components/TransactionButton";
 import { parseUnits } from "viem";
 import { useState } from "react";
 import { APYUSD_ADDRESS } from "@/config/wagmi";
-import { PYPOUCH_CONTRACT_ADDRESS } from "@/config/contracts";
 import { useAaveAPY } from "@/hooks/useAaveAPY";
 import { useWithdrawActions } from "@/hooks/useWithdrawActions";
+import { usePyPouch } from '@/contexts/PyPouchContext';
 
 const Withdraw = () => {
   const navigate = useNavigate();
@@ -19,9 +19,11 @@ const Withdraw = () => {
   const [amount, setAmount] = useState('');
 
   const apy = useAaveAPY();
+  const { pyPouchAddress } = usePyPouch();
   const { data: pyusdBalance } = useBalance({
-    address: PYPOUCH_CONTRACT_ADDRESS,
-    token: APYUSD_ADDRESS
+    address: pyPouchAddress!,
+    token: APYUSD_ADDRESS,
+    enabled: !!pyPouchAddress
   });
 
   const { handleWithdraw, withdrawState } = useWithdrawActions(amount);

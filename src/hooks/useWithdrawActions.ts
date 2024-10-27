@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useWriteContract, useWaitForTransactionReceipt, useAccount, useConfig } from 'wagmi';
 import { parseUnits } from "viem";
-import { pyPouchContractConfig } from "@/config/contracts";
+import { pyPouchConfig } from "@/config/contracts";
 import { toast } from "sonner";
+import { usePyPouch } from "@/contexts/PyPouchContext";
 
 export const useWithdrawActions = (amount: string) => {
   const { address } = useAccount();
+  const { pyPouchAddress } = usePyPouch();
   const config = useConfig();
 
   // Withdraw transaction state
@@ -48,7 +50,8 @@ export const useWithdrawActions = (amount: string) => {
     try {
       console.log('Initiating withdrawal for amount:', amount);
       writeWithdraw({
-        ...pyPouchContractConfig,
+        ...pyPouchConfig,
+        address: pyPouchAddress,
         functionName: 'withdraw',
         args: [parseUnits(amount, 6), address],
         chain: config.chains[0],

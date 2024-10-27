@@ -1,15 +1,32 @@
 import { PublicClient } from 'viem';
 import { PYUSD_ADDRESS } from "@/config/wagmi";
-import { PYPOUCH_CONTRACT_ADDRESS } from "@/config/contracts";
+import {   } from '@/contexts/PyPouchContext';
 
-export const fetchTransferLogs = async (
-  publicClient: PublicClient,
-  address: `0x${string}`,
-  fromBlock: bigint,
-  toBlock: bigint
-) => {
-  return Promise.all([
-    publicClient.getLogs({
+interface TransferLogsProps {
+  publicClient: PublicClient;
+  address: `0x${string}`;
+  fromBlock: bigint;
+  toBlock: bigint;
+  pyPouchAddress: string;
+}
+
+export const fetchTransferLogs = async ({
+  publicClient,
+  address,
+  fromBlock,
+  toBlock,
+  pyPouchAddress
+}: TransferLogsProps) => {
+  console.log('Fetching transfer logs with params:', {
+    address,
+    fromBlock: fromBlock.toString(),
+    toBlock: toBlock.toString(),
+    pyPouchAddress
+  });
+
+  try {
+    console.log('Fetching outgoing PYUSD transfers...');
+    const outgoingTransfers = await publicClient.getLogs({
       address: PYUSD_ADDRESS,
       event: {
         type: 'event',
@@ -23,8 +40,11 @@ export const fetchTransferLogs = async (
       args: { from: address },
       fromBlock,
       toBlock
-    }),
-    publicClient.getLogs({
+    });
+    console.log('Outgoing transfers:', outgoingTransfers);
+
+    console.log('Fetching incoming PYUSD transfers...');
+    const incomingTransfers = await publicClient.getLogs({
       address: PYUSD_ADDRESS,
       event: {
         type: 'event',
@@ -38,9 +58,12 @@ export const fetchTransferLogs = async (
       args: { to: address },
       fromBlock,
       toBlock
-    }),
-    publicClient.getLogs({
-      address: PYPOUCH_CONTRACT_ADDRESS,
+    });
+    console.log('Incoming transfers:', incomingTransfers);
+
+    console.log('Fetching yield earned events...');
+    const yieldEvents = await publicClient.getLogs({
+      address: pyPouchAddress as `0x${string}`, // Type assertion to fix type error
       event: {
         type: 'event', 
         name: 'YieldEarned',
@@ -52,6 +75,12 @@ export const fetchTransferLogs = async (
       args: { user: address },
       fromBlock,
       toBlock
-    })
-  ]);
+    });
+    console.log('Yield events:', yieldEvents);
+
+    return [outgoingTransfers, incomingTransfers, yieldEvents];
+  } catch (error) {
+    console.error('Error fetching transfer logs:', error);
+    throw error;
+  }
 };
