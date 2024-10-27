@@ -32,7 +32,16 @@ const Deposit = () => {
           <h2 className="text-2xl font-bold mb-2">Deposit PYUSD</h2>
           <div className="flex items-baseline mb-2">
             <p className="text-4xl font-bold">
-              {pyusdBalance ? Number(pyusdBalance.formatted).toFixed(2) : '0.00'}
+              {pyusdBalance ? (
+                <>
+                  {Number(pyusdBalance.formatted).toFixed(6).slice(0, -4)}
+                  <span className="text-gray-400">
+                    {Number(pyusdBalance.formatted).toFixed(6).slice(-4)}
+                  </span>
+                </>
+              ) : (
+                '0.000000'
+              )}
             </p>
             <span className="text-lg ml-1">aPYUSD</span>
           </div>

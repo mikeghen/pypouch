@@ -41,7 +41,16 @@ const Index = () => {
               <div className="flex items-center justify-center gap-3">
                 <div className="flex items-baseline">
                   <p className="text-4xl font-bold">
-                    {aPYUSDBalance ? Number(aPYUSDBalance.formatted).toFixed(2) : '0.00'}
+                    {aPYUSDBalance ? (
+                      <>
+                        {Number(aPYUSDBalance.formatted).toFixed(6).slice(0, -4)}
+                        <span className="text-gray-400">
+                          {Number(aPYUSDBalance.formatted).toFixed(6).slice(-4)}
+                        </span>
+                      </>
+                    ) : (
+                      '0.000000'
+                    )}
                   </p>
                   <span className="text-lg ml-1">aPYUSD</span>
                 </div>

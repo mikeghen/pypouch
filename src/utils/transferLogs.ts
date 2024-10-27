@@ -1,5 +1,6 @@
 import { PublicClient } from 'viem';
 import { PYUSD_ADDRESS } from "@/config/wagmi";
+import { PYPOUCH_CONTRACT_ADDRESS } from "@/config/contracts";
 
 export const fetchTransferLogs = async (
   publicClient: PublicClient,
@@ -35,6 +36,20 @@ export const fetchTransferLogs = async (
         ],
       },
       args: { to: address },
+      fromBlock,
+      toBlock
+    }),
+    publicClient.getLogs({
+      address: PYPOUCH_CONTRACT_ADDRESS,
+      event: {
+        type: 'event', 
+        name: 'YieldEarned',
+        inputs: [
+          { type: 'address', name: 'user', indexed: true },
+          { type: 'uint256', name: 'yield' },
+        ],
+      },
+      args: { user: address },
       fromBlock,
       toBlock
     })

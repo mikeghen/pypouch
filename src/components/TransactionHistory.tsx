@@ -30,10 +30,12 @@ const TransactionHistory = () => {
         const fromBlock = latestBlock - TOTAL_BLOCKS + (BigInt(i) * CHUNK_SIZE);
         const toBlock = fromBlock + CHUNK_SIZE - 1n;
         chunks.push(fetchTransferLogs(publicClient, address, fromBlock, toBlock));
+        // Sleep for 100ms to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
 
       const results = await Promise.all(chunks);
-      const allTransfers = results.flatMap(([from, to]) => [...from, ...to]);
+      const allTransfers = results.flatMap(([from, to, earned]) => [...from, ...to, ...earned]); 
       
       const blocks = await Promise.all(
         allTransfers.map(transfer => 
@@ -44,16 +46,29 @@ const TransactionHistory = () => {
       return allTransfers
         .map((event, index) => {
           const isIncoming = event.args.to?.toLowerCase() === address.toLowerCase();
-          const amount = Number(formatUnits(event.args.value || 0n, 6)).toFixed(2);
+          const amount = Number(formatUnits(event.args.value || event.args.yield || 0n, 6)).toFixed(6); 
           const isDeposit = event.args.to?.toLowerCase() === PYPOUCH_CONTRACT_ADDRESS.toLowerCase();
+          const isWithdraw = event.args.from?.toLowerCase() === PYPOUCH_CONTRACT_ADDRESS.toLowerCase() && isIncoming;
+          const isEarned = event.eventName === 'YieldEarned';
           
-          let type = isIncoming ? 'Receive' : (isDeposit ? 'Deposit' : 'Send');
+          let type;
+          if (isEarned) {
+            type = 'Earned';
+          } else if (isWithdraw) {
+            type = 'Withdraw';
+          } else if (isIncoming) {
+            type = 'Receive';
+          } else if (isDeposit) {
+            type = 'Deposit';
+          } else {
+            type = 'Send';
+          }
           
           return {
             id: `${event.blockNumber}-${event.logIndex}`,
             date: new Date(Number(blocks[index].timestamp) * 1000),
             type,
-            amount: `${isIncoming ? '+' : '-'}${amount}`,
+            amount: `${isIncoming || isEarned ? '+' : '-'}${amount}`, // Adjust sign for Earned
             from: event.args.from,
             to: event.args.to,
             hash: event.transactionHash

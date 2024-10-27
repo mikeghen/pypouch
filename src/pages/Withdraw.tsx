@@ -4,56 +4,36 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { useWriteContract, useWaitForTransactionReceipt, useAccount, useReadContract, useConfig } from 'wagmi';
+import { useBalance } from 'wagmi';
 import { TransactionButton } from "@/components/TransactionButton";
-import { pyPouchContractConfig } from "@/config/contracts";
-import { parseUnits, formatUnits } from "viem";
+import { parseUnits } from "viem";
 import { useState } from "react";
+import { APYUSD_ADDRESS } from "@/config/wagmi";
+import { PYPOUCH_CONTRACT_ADDRESS } from "@/config/contracts";
+import { useAaveAPY } from "@/hooks/useAaveAPY";
+import { useWithdrawActions } from "@/hooks/useWithdrawActions";
 
 const Withdraw = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { address } = useAccount();
-  const config = useConfig();
   const [amount, setAmount] = useState('');
 
-  const { writeContract: writeWithdraw, data: withdrawHash, isPending } = useWriteContract();
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
-    hash: withdrawHash,
+  const apy = useAaveAPY();
+  const { data: pyusdBalance } = useBalance({
+    address: PYPOUCH_CONTRACT_ADDRESS,
+    token: APYUSD_ADDRESS
   });
 
-  const { data: netDeposits } = useReadContract({
-    ...pyPouchContractConfig,
-    functionName: 'getNetDeposits',
-    args: [address!],
-  });
+  const { handleWithdraw, withdrawState } = useWithdrawActions(amount);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleWithdraw();
   };
 
-  const handleWithdraw = () => {
-    try {
-      writeWithdraw({
-        ...pyPouchContractConfig,
-        functionName: 'withdraw',
-        args: [parseUnits(amount || '0', 6), address!],
-        account: address,
-        chain: config.chains[0],
-      });
-    } catch (error) {
-      toast({
-        title: "Withdrawal failed",
-        description: "An error occurred during withdrawal.",
-        variant: "destructive",
-      });
-    }
-  };
-
   const handleBalanceClick = () => {
-    if (netDeposits) {
-      setAmount(formatUnits(netDeposits, 6));
+    if (pyusdBalance) {
+      setAmount(pyusdBalance.formatted);
     }
   };
 
@@ -70,7 +50,27 @@ const Withdraw = () => {
         </Button>
         
         <Card className="p-6">
-          <h2 className="text-2xl font-bold mb-6">Withdraw PYUSD</h2>
+          <h2 className="text-2xl font-bold mb-2">Withdraw PYUSD</h2>
+          <div className="flex items-baseline mb-2">
+            <p className="text-4xl font-bold">
+              {pyusdBalance ? (
+                <>
+                  {Number(pyusdBalance.formatted).toFixed(6).slice(0, -4)}
+                  <span className="text-gray-400">
+                    {Number(pyusdBalance.formatted).toFixed(6).slice(-4)}
+                  </span>
+                </>
+              ) : (
+                '0.000000'
+              )}
+            </p>
+            <span className="text-lg ml-1">aPYUSD</span>
+          </div>
+          {apy && (
+            <p className="text-sm text-green-600 mb-6">
+              Earn {apy.toFixed(2)}% APY from Aave
+            </p>
+          )}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="amount" className="text-sm font-medium">
@@ -91,16 +91,15 @@ const Withdraw = () => {
               >
                 <WalletIcon className="h-4 w-4 text-gray-400" />
                 <p className="text-sm text-gray-400">
-                  {netDeposits ? `${Number(formatUnits(netDeposits, 6)).toFixed(6)} PYUSD deposited` : '0.000000 PYUSD'}
+                  {pyusdBalance ? `${Number(pyusdBalance.formatted).toFixed(6)} PYUSD deposited` : '0.000000 PYUSD'}
                 </p>
               </div>
             </div>
             <TransactionButton
-              onClick={handleWithdraw}
-              hash={withdrawHash}
-              isConfirming={isConfirming}
-              isSuccess={isSuccess}
-              isPending={isPending}
+              hash={withdrawState.hash}
+              isConfirming={withdrawState.isConfirming}
+              isSuccess={withdrawState.isSuccess}
+              isPending={withdrawState.isPending}
               action="Withdraw"
             />
           </form>
