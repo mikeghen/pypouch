@@ -17,6 +17,7 @@ import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { aavePoolConfig } from "@/config/contracts";
 import { toast } from "sonner";
 import { mainnet } from "wagmi/chains";
+import { useBlockNumber } from 'wagmi';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -50,14 +51,26 @@ const Index = () => {
     checkAndSetPyPouch();
   }, [pyPouchData, setPyPouchAddress, publicClient, pyPouchAddress]);
 
-  const { data: aPYUSDBalance } = useBalance({
+  const { data: aPYUSDBalance, refetch: refetchAPYUSD } = useBalance({
     address: pyPouchAddress!,
     token: APYUSD_ADDRESS,
   });
-  const { data: pyusdBalance } = useBalance({
+
+  const { data: pyusdBalance, refetch: refetchPYUSD } = useBalance({
     address,
-    token: PYUSD_ADDRESS
+    token: PYUSD_ADDRESS,
   });
+
+  const { data: blockNumber } = useBlockNumber({ watch: true });
+
+  // Effect to refetch balances when a new block is detected
+  useEffect(() => {
+    if (blockNumber) {
+      refetchAPYUSD();
+      refetchPYUSD();
+    }
+  }, [blockNumber, refetchAPYUSD, refetchPYUSD]);
+
   const apy = useAaveAPY();
 
   // Add transaction state effect
