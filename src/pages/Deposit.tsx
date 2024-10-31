@@ -7,15 +7,26 @@ import { DepositForm } from "@/components/DepositForm";
 import { useBalance } from 'wagmi';
 import { APYUSD_ADDRESS } from "@/config/wagmi";
 import { usePyPouch } from '@/contexts/PyPouchContext';
+import { useBlockNumber } from 'wagmi';
+import { useEffect } from 'react';
 
 const Deposit = () => {
   const navigate = useNavigate();
   const apy = useAaveAPY();
   const { pyPouchAddress } = usePyPouch();
-  const { data: pyusdBalance } = useBalance({
+  const { data: pyusdBalance, refetch: refetchPYUSDBalance } = useBalance({
     address: pyPouchAddress!,
     token: APYUSD_ADDRESS,
   });
+
+  const { data: blockNumber } = useBlockNumber({ watch: true });
+
+  // Effect to refetch balances when a new block is detected
+  useEffect(() => {
+    if (blockNumber) {
+      refetchPYUSDBalance();
+    }
+  }, [blockNumber, refetchPYUSDBalance]);
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">

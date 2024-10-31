@@ -4,10 +4,10 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { useBalance } from 'wagmi';
+import { useBalance, useBlockNumber } from 'wagmi';
 import { TransactionButton } from "@/components/TransactionButton";
 import { parseUnits } from "viem";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { APYUSD_ADDRESS } from "@/config/wagmi";
 import { useAaveAPY } from "@/hooks/useAaveAPY";
 import { useWithdrawActions } from "@/hooks/useWithdrawActions";
@@ -20,10 +20,19 @@ const Withdraw = () => {
 
   const apy = useAaveAPY();
   const { pyPouchAddress } = usePyPouch();
-  const { data: pyusdBalance } = useBalance({
+  const { data: pyusdBalance, refetch: refetchBalance } = useBalance({
     address: pyPouchAddress!,
     token: APYUSD_ADDRESS,
   });
+
+  const { data: blockNumber } = useBlockNumber({ watch: true });
+
+  // Effect to refetch balances when a new block is detected
+  useEffect(() => {
+    if (blockNumber) {
+      refetchBalance();
+    }
+  }, [blockNumber, refetchBalance]);
 
   const { handleWithdraw, withdrawState } = useWithdrawActions(amount);
 

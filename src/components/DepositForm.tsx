@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { WalletIcon } from "lucide-react";
-import { useBalance, useAccount, useReadContract } from 'wagmi';
+import { useBalance, useAccount, useReadContract, useBlockNumber } from 'wagmi';
 import { pyusdContractConfig, pyPouchConfig } from "@/config/contracts";
 import { TransactionButton } from "@/components/TransactionButton";
 import { useDepositActions } from "@/hooks/useDepositActions";
@@ -11,10 +11,12 @@ export const DepositForm = () => {
   const [amount, setAmount] = useState('');
   const { address } = useAccount();
   const { pyPouchAddress } = usePyPouch();
-  const { data: pyusdBalance } = useBalance({
+  const { data: pyusdBalance, refetch: refetchWalletBalance } = useBalance({
     address,
     token: pyusdContractConfig.address,
   });
+
+  const { data: blockNumber } = useBlockNumber({ watch: true });
 
   const {
     needsApproval,
@@ -42,6 +44,12 @@ export const DepositForm = () => {
       setIsAllowanceSufficient(allowance >= inputAmount);
     }
   }, [allowanceData, amount]);
+
+  useEffect(() => {
+    if (blockNumber) {
+      refetchWalletBalance();
+    }
+  }, [blockNumber, refetchWalletBalance]);
 
   const handleBalanceClick = () => {
     if (pyusdBalance) {
