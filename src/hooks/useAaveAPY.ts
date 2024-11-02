@@ -1,5 +1,5 @@
 import { useReadContract } from 'wagmi';
-import { aavePoolConfig, PYUSD_ADDRESS } from '@/config/contracts';
+import { aavePoolConfig, TOKEN_ADDRESS } from '@/config/contracts';
 
 type ReserveData = {
   configuration: { data: bigint };
@@ -11,7 +11,7 @@ export const useAaveAPY = () => {
   const { data } = useReadContract({
     ...aavePoolConfig,
     functionName: 'getReserveData',
-    args: [PYUSD_ADDRESS],
+    args: [TOKEN_ADDRESS],
   });
 
   if (!data) return null;
@@ -19,7 +19,7 @@ export const useAaveAPY = () => {
   // Convert RAY (27 decimals) to percentage
   const reserveData = data as ReserveData;
   const liquidityRate = Number(reserveData.currentLiquidityRate);
-  const APY = (liquidityRate / 1e27) * 100;
+  const APY = liquidityRate * 100 / 1e27;
 
   return APY;
 };

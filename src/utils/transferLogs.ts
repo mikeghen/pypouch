@@ -1,5 +1,5 @@
 import { PublicClient } from 'viem';
-import { PYUSD_ADDRESS } from "@/config/wagmi";
+import { TOKEN_ADDRESS } from "@/config/contracts";
 import {   } from '@/contexts/PyPouchContext';
 
 interface TransferLogsProps {
@@ -27,7 +27,7 @@ export const fetchTransferLogs = async ({
   try {
     console.log('Fetching outgoing PYUSD transfers...');
     const outgoingTransfers = await publicClient.getLogs({
-      address: PYUSD_ADDRESS,
+      address: TOKEN_ADDRESS,
       event: {
         type: 'event',
         name: 'Transfer',
@@ -45,7 +45,7 @@ export const fetchTransferLogs = async ({
 
     console.log('Fetching incoming PYUSD transfers...');
     const incomingTransfers = await publicClient.getLogs({
-      address: PYUSD_ADDRESS,
+      address: TOKEN_ADDRESS,
       event: {
         type: 'event',
         name: 'Transfer',

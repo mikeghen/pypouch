@@ -5,13 +5,14 @@ import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useWriteContract, useWaitForTransactionReceipt, useAccount, useConfig, useBalance } from 'wagmi';
 import { TransactionButton } from "@/components/TransactionButton";
-import { pyusdContractConfig } from "@/config/contracts";
+import { tokenContractConfig } from "@/config/contracts";
 import { parseUnits } from "viem";
 import { useState, useEffect } from "react";
-import { PYUSD_ADDRESS } from "@/config/wagmi";
+import { TOKEN_ADDRESS } from "@/config/contracts";
 import QrScanner from 'react-qr-scanner';
 import { Header } from "@/components/Header";
 import { toast } from "sonner";
+import { useTokenSymbols } from "@/hooks/useTokenSymbols";
 
 const Send = () => {
   const navigate = useNavigate();
@@ -24,10 +25,11 @@ const Send = () => {
   const [recipientAddress, setRecipientAddress] = useState('');
   const [amount, setAmount] = useState('');
   const [showScanner, setShowScanner] = useState(false);
+  const { tokenSymbol } = useTokenSymbols();
 
-  const { data: pyusdBalance } = useBalance({
+  const { data: tokenBalance } = useBalance({
     address,
-    token: PYUSD_ADDRESS,
+    token: TOKEN_ADDRESS,
   });
 
   useEffect(() => {
@@ -63,12 +65,15 @@ const Send = () => {
       return;
     }
 
+    console.log("SEND", parseUnits(Number(amount).toFixed(6), 6));
+
     try {
       console.log('[Send] Attempting to execute send');
       writeContract({
-        ...pyusdContractConfig,
+        ...tokenContractConfig,
+        address: TOKEN_ADDRESS,
         functionName: 'transfer',
-        args: [recipientAddress as `0x${string}`, parseUnits(amount, 6)],
+        args: [recipientAddress as `0x${string}`, parseUnits(Number(amount).toFixed(6), 6)],
         account: address,
         chain: config.chains[0],
       });
@@ -76,17 +81,15 @@ const Send = () => {
       console.log('[Send] Send transaction initiated');
     } catch (error) {
       console.error('[Send] Error during send:', error);
-      toast({
-        title: "Send failed",
+      toast.error("Send failed", {
         description: error instanceof Error ? error.message : "An error occurred during send.",
-        variant: "destructive",
       });
     }
   };
 
   const handleBalanceClick = () => {
-    if (pyusdBalance) {
-      setAmount(pyusdBalance.formatted);
+    if (tokenBalance) {
+      setAmount(tokenBalance.formatted);
     }
   };
 
@@ -99,10 +102,8 @@ const Send = () => {
 
   const handleError = (error: any) => {
     console.error(error);
-    toast({
-      title: "Scan failed",
+    toast.error("Scan failed", {
       description: "Failed to scan QR code.",
-      variant: "destructive",
     });
   };
 
@@ -121,7 +122,22 @@ const Send = () => {
           </Button>
           
           <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-6">Send PYUSD</h2>
+            <h2 className="text-2xl font-bold mb-2">Send {tokenSymbol}</h2>
+            <div className="flex items-baseline mb-6">
+              <p className="text-4xl font-bold">
+                {tokenBalance ? (
+                  <>
+                    {Number(tokenBalance.formatted).toFixed(6).slice(0, -4)}
+                    <span className="text-gray-400">
+                      {Number(tokenBalance.formatted).toFixed(6).slice(-4)}
+                    </span>
+                  </>
+                ) : (
+                  '0.000000'
+                )}
+              </p>
+              <span className="text-lg ml-1">{tokenSymbol}</span>
+            </div>
 
             <form className="space-y-4">
               <div className="space-y-2">
@@ -168,7 +184,7 @@ const Send = () => {
                 >
                   <WalletIcon className="h-4 w-4 text-gray-400" />
                   <p className="text-sm text-gray-400">
-                    {pyusdBalance ? `${Number(pyusdBalance.formatted).toFixed(6)} PYUSD available` : '0.000000 PYUSD'}
+                    {tokenBalance ? `${Number(tokenBalance.formatted).toFixed(6)} PYUSD available` : '0.000000 PYUSD'}
                   </p>
                 </div>
               </div>

@@ -10,13 +10,14 @@ import { CHUNK_SIZE, TOTAL_BLOCKS } from '@/utils/constants';
 import { fetchTransferLogs } from '@/utils/transferLogs';
 import { TransactionTable } from './TransactionTable';
 import { usePyPouch } from '@/contexts/PyPouchContext';
+import { useTokenSymbols } from '@/hooks/useTokenSymbols';
 
 const TransactionHistory = () => {
   const { toast } = useToast();
   const { address } = useAccount();
   const publicClient = usePublicClient();
   const { pyPouchAddress } = usePyPouch();
-
+  const { tokenSymbol } = useTokenSymbols();
   const { data: transactions = [], isLoading } = useQuery({
     queryKey: ['pyusd-transfers', address],
     queryFn: async () => {
@@ -88,7 +89,7 @@ const TransactionHistory = () => {
   const downloadCSV = () => {
     if (!transactions.length) return;
 
-    const headers = ['Date', 'Type', 'Amount (PYUSD)', 'From', 'To'];
+    const headers = ['Date', 'Type', 'Amount ('+ tokenSymbol +')', 'From', 'To'];
     const csvContent = [
       headers.join(','),
       ...transactions.map(tx => [

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAaveAPY } from "@/hooks/useAaveAPY";
 import { DepositForm } from "@/components/DepositForm";
 import { useBalance } from 'wagmi';
-import { APYUSD_ADDRESS } from "@/config/wagmi";
+import { ATOKEN_ADDRESS } from "@/config/contracts";
 import { usePyPouch } from '@/contexts/PyPouchContext';
 import { useBlockNumber } from 'wagmi';
 import { useEffect } from 'react';
@@ -17,7 +17,7 @@ const Deposit = () => {
   const { pyPouchAddress } = usePyPouch();
   const { data: pyusdBalance, refetch: refetchPYUSDBalance } = useBalance({
     address: pyPouchAddress!,
-    token: APYUSD_ADDRESS,
+    token: ATOKEN_ADDRESS,
   });
 
   const { data: blockNumber } = useBlockNumber({ watch: true });

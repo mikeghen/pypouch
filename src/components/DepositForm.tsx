@@ -2,18 +2,21 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { WalletIcon } from "lucide-react";
 import { useBalance, useAccount, useReadContract, useBlockNumber } from 'wagmi';
-import { pyusdContractConfig, pyPouchConfig } from "@/config/contracts";
+import { tokenContractConfig, TOKEN_ADDRESS } from "@/config/contracts";
 import { TransactionButton } from "@/components/TransactionButton";
 import { useDepositActions } from "@/hooks/useDepositActions";
 import { usePyPouch } from "@/contexts/PyPouchContext";
+import { useTokenSymbols } from "@/hooks/useTokenSymbols";
 
 export const DepositForm = () => {
   const [amount, setAmount] = useState('');
   const { address } = useAccount();
   const { pyPouchAddress } = usePyPouch();
-  const { data: pyusdBalance, refetch: refetchWalletBalance } = useBalance({
+  const { tokenSymbol } = useTokenSymbols();
+  
+  const { data: tokenBalance, refetch: refetchWalletBalance } = useBalance({
     address,
-    token: pyusdContractConfig.address,
+    token: TOKEN_ADDRESS,
   });
 
   const { data: blockNumber } = useBlockNumber({ watch: true });
@@ -28,8 +31,8 @@ export const DepositForm = () => {
 
   // Read allowance from the contract
   const { data: allowanceData } = useReadContract({
-    address: pyusdContractConfig.address,
-    abi: pyusdContractConfig.abi,
+    ...tokenContractConfig,
+    address: TOKEN_ADDRESS,
     functionName: "allowance",
     args: [address, pyPouchAddress],
   });
@@ -52,8 +55,8 @@ export const DepositForm = () => {
   }, [blockNumber, refetchWalletBalance]);
 
   const handleBalanceClick = () => {
-    if (pyusdBalance) {
-      setAmount(pyusdBalance.formatted);
+    if (tokenBalance) {
+      setAmount(tokenBalance.formatted);
     }
   };
 
@@ -68,7 +71,7 @@ export const DepositForm = () => {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <label htmlFor="amount" className="text-sm font-medium">
-          Amount (PYUSD)
+          Amount ({tokenSymbol})
         </label>
         <Input
           id="amount"
@@ -85,7 +88,7 @@ export const DepositForm = () => {
         >
           <WalletIcon className="h-4 w-4 text-gray-400" />
           <p className="text-sm text-gray-400">
-            {pyusdBalance ? `${Number(pyusdBalance.formatted).toFixed(6)} PYUSD available` : '0.000000 PYUSD'}
+            {tokenBalance ? `${Number(tokenBalance.formatted).toFixed(6)} ${tokenSymbol}` : `0.000000 ${tokenSymbol}`}
           </p>
         </div>
       </div>

@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import { WalletConnect } from "@/components/WalletConnect";
 import { useAccount, useBalance } from 'wagmi';
 import { useAaveAPY } from "@/hooks/useAaveAPY";
-import { PYUSD_ADDRESS, APYUSD_ADDRESS } from "@/config/wagmi";
+import { TOKEN_ADDRESS, ATOKEN_ADDRESS } from "@/config/contracts";
 import { useContractRead } from 'wagmi';
 import { pyPouchFactoryConfig } from "@/config/contracts";
 import { usePyPouch } from '@/contexts/PyPouchContext';
@@ -18,16 +18,19 @@ import { aavePoolConfig } from "@/config/contracts";
 import { toast } from "sonner";
 import { mainnet } from "wagmi/chains";
 import { useBlockNumber } from 'wagmi';
+import { useTokenSymbols } from '@/hooks/useTokenSymbols';
 
 const Index = () => {
   const navigate = useNavigate();
   const { address, isConnected } = useAccount();
   const { pyPouchAddress, setPyPouchAddress } = usePyPouch();
+  const { tokenSymbol, aTokenSymbol } = useTokenSymbols();
   const publicClient = usePublicClient();
   const { writeContract, data: hash, isPending } = useWriteContract();
   const { isLoading, isSuccess, isError } = useWaitForTransactionReceipt({
     hash,
   });
+
 
   // Read the PyPouch address for the connected user
   const { data: pyPouchData } = useContractRead({
@@ -53,12 +56,12 @@ const Index = () => {
 
   const { data: aPYUSDBalance, refetch: refetchAPYUSD } = useBalance({
     address: pyPouchAddress!,
-    token: APYUSD_ADDRESS,
+    token: ATOKEN_ADDRESS,
   });
 
   const { data: pyusdBalance, refetch: refetchPYUSD } = useBalance({
     address,
-    token: PYUSD_ADDRESS,
+    token: TOKEN_ADDRESS,
   });
 
   const { data: blockNumber } = useBlockNumber({ watch: true });
@@ -105,8 +108,8 @@ const Index = () => {
         abi: pyPouchFactoryConfig.abi,
         functionName: 'createPyPouch',
         args: [
-          PYUSD_ADDRESS,
-          APYUSD_ADDRESS,
+          TOKEN_ADDRESS,
+          ATOKEN_ADDRESS,
           aavePoolConfig.address
         ],
         account: address,
@@ -158,7 +161,7 @@ const Index = () => {
                   <span className="text-3xl font-bold">
                     {pyusdBalance ? Number(pyusdBalance.formatted).toFixed(2) : '0.00'}
                   </span>
-                  <span className="text-lg ml-2 text-gray-600">PYUSD</span>
+                  <span className="text-lg ml-2 text-gray-600">{tokenSymbol}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <WalletIcon className="h-4 w-4 text-gray-400" />
@@ -180,7 +183,7 @@ const Index = () => {
                       </>
                     ) : '0.000000'}
                   </span>
-                  <span className="text-lg ml-2 text-gray-600">PYUSD</span>
+                  <span className="text-lg ml-2 text-gray-600">{aTokenSymbol}</span>
                 </div>
                 <p className="text-sm text-green-600 flex items-center gap-1">
                   <PiggyBankIcon className="h-4 w-4" />

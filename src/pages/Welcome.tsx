@@ -4,10 +4,10 @@ import { useAccount, useReadContract, useWriteContract, useWaitForTransactionRec
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { WalletConnect } from "@/components/WalletConnect";
-import { pyPouchFactoryConfig } from "@/config/contracts";
+import { pyPouchFactoryConfig, TOKEN_ADDRESS, ATOKEN_ADDRESS } from "@/config/contracts";
 import { usePyPouch } from '@/contexts/PyPouchContext';
 import { PiggyBankIcon, Loader2 } from "lucide-react";
-import { PYUSD_ADDRESS, APYUSD_ADDRESS } from "@/config/wagmi";
+import {  } from "@/config/contracts";
 import { aavePoolConfig } from "@/config/contracts";
 import { toast } from "sonner";
 import { TransactionButton } from "@/components/TransactionButton";
@@ -72,8 +72,8 @@ const Welcome = () => {
         abi: pyPouchFactoryConfig.abi,
         functionName: 'createPyPouch',
         args: [
-          PYUSD_ADDRESS,
-          APYUSD_ADDRESS,
+          TOKEN_ADDRESS,
+          ATOKEN_ADDRESS,
           aavePoolConfig.address
         ],
         chain: mainnet,

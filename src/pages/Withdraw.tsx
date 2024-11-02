@@ -8,11 +8,12 @@ import { useBalance, useBlockNumber } from 'wagmi';
 import { TransactionButton } from "@/components/TransactionButton";
 import { parseUnits } from "viem";
 import { useState, useEffect } from "react";
-import { APYUSD_ADDRESS } from "@/config/wagmi";
+import { TOKEN_ADDRESS, ATOKEN_ADDRESS } from "@/config/contracts";
 import { useAaveAPY } from "@/hooks/useAaveAPY";
 import { useWithdrawActions } from "@/hooks/useWithdrawActions";
 import { usePyPouch } from '@/contexts/PyPouchContext';
 import { Header } from "@/components/Header";
+import { useTokenSymbols } from "@/hooks/useTokenSymbols";
 
 const Withdraw = () => {
   const navigate = useNavigate();
@@ -21,9 +22,9 @@ const Withdraw = () => {
 
   const apy = useAaveAPY();
   const { pyPouchAddress } = usePyPouch();
-  const { data: pyusdBalance, refetch: refetchBalance } = useBalance({
+  const { data: tokenBalance, refetch: refetchBalance } = useBalance({
     address: pyPouchAddress!,
-    token: APYUSD_ADDRESS,
+    token: ATOKEN_ADDRESS,
   });
 
   const { data: blockNumber } = useBlockNumber({ watch: true });
@@ -43,10 +44,12 @@ const Withdraw = () => {
   };
 
   const handleBalanceClick = () => {
-    if (pyusdBalance) {
-      setAmount(pyusdBalance.formatted);
+    if (tokenBalance) {
+      setAmount(tokenBalance.formatted);
     }
   };
+
+  const { tokenSymbol, aTokenSymbol } = useTokenSymbols();
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
@@ -63,21 +66,21 @@ const Withdraw = () => {
           </Button>
           
           <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-2">Withdraw PYUSD</h2>
+            <h2 className="text-2xl font-bold mb-2">Withdraw {tokenSymbol}</h2>
             <div className="flex items-baseline mb-2">
               <p className="text-4xl font-bold">
-                {pyusdBalance ? (
+                {tokenBalance ? (
                   <>
-                    {Number(pyusdBalance.formatted).toFixed(6).slice(0, -4)}
+                    {Number(tokenBalance.formatted).toFixed(6).slice(0, -4)}
                     <span className="text-gray-400">
-                      {Number(pyusdBalance.formatted).toFixed(6).slice(-4)}
+                      {Number(tokenBalance.formatted).toFixed(6).slice(-4)}
                     </span>
                   </>
                 ) : (
                   '0.000000'
                 )}
               </p>
-              <span className="text-lg ml-1">aPYUSD</span>
+              <span className="text-lg ml-1">{aTokenSymbol}</span>
             </div>
             {apy && (
               <p className="text-sm text-green-600 mb-6">
@@ -87,7 +90,7 @@ const Withdraw = () => {
             <form className="space-y-4">
               <div className="space-y-2">
                 <label htmlFor="amount" className="text-sm font-medium">
-                  Amount (PYUSD)
+                  Amount ({tokenSymbol})
                 </label>
                 <Input
                   id="amount"
@@ -104,7 +107,7 @@ const Withdraw = () => {
                 >
                   <WalletIcon className="h-4 w-4 text-gray-400" />
                   <p className="text-sm text-gray-400">
-                    {pyusdBalance ? `${Number(pyusdBalance.formatted).toFixed(6)} PYUSD deposited` : '0.000000 PYUSD'}
+                    {tokenBalance ? `${Number(tokenBalance.formatted).toFixed(6)} ${tokenSymbol}` : `0.000000 ${tokenSymbol}`}
                   </p>
                 </div>
               </div>

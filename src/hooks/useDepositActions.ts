@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useWriteContract, useWaitForTransactionReceipt, useAccount, useConfig } from 'wagmi';
 import { parseUnits } from "viem";
-import { pyusdContractConfig, pyPouchConfig } from "@/config/contracts";
+import { tokenContractConfig, pyPouchConfig, TOKEN_ADDRESS } from "@/config/contracts";
 import { toast } from "sonner";
 import { usePyPouch } from "@/contexts/PyPouchContext";
 
@@ -82,7 +82,8 @@ export const useDepositActions = (amount: string) => {
     try {
       console.log('Initiating approval for amount:', amount);
       writeApprove({
-        ...pyusdContractConfig,
+        ...tokenContractConfig,
+        address: TOKEN_ADDRESS,
         functionName: 'approve',
         args: [pyPouchAddress, parseUnits(amount, 6)],
         chain: config.chains[0],
