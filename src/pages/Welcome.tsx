@@ -115,7 +115,7 @@ const Welcome = () => {
               hash={hash}
               isConfirming={isConfirming}
               isSuccess={isSuccess}
-              isPending={isPending}
+              isLoading={isPending}
               action="Create PyPouch"
             />
           )}

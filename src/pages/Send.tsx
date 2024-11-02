@@ -3,19 +3,18 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
 import { useWriteContract, useWaitForTransactionReceipt, useAccount, useConfig, useBalance } from 'wagmi';
 import { TransactionButton } from "@/components/TransactionButton";
 import { pyusdContractConfig } from "@/config/contracts";
 import { parseUnits } from "viem";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PYUSD_ADDRESS } from "@/config/wagmi";
 import QrScanner from 'react-qr-scanner';
 import { Header } from "@/components/Header";
+import { toast } from "sonner";
 
 const Send = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const { address } = useAccount();
   const config = useConfig();
   const { writeContract, data: hash, isPending } = useWriteContract();
@@ -31,10 +30,38 @@ const Send = () => {
     token: PYUSD_ADDRESS,
   });
 
-  const handleSend = () => {
+  useEffect(() => {
+    let loadingToast;
+    console.log('Send transaction state:', { isPending, isSuccess, isError: !isSuccess && !isPending && hash });
+    
+    if (isPending) {
+      console.log('Showing send pending toast');
+      loadingToast = toast.loading("Sending PYUSD...");
+      console.log('Send pending toast ID:', loadingToast);
+    } else {
+      toast.dismiss(loadingToast);
+    }
+    if (isSuccess) {
+      console.log('Showing send success toast');
+      toast.success("Send successful!", { id: loadingToast });
+      console.log('Send success toast shown with ID:', loadingToast);
+    }
+    if (!isSuccess && !isPending && hash) {
+      console.log('Showing send error toast');
+      toast.error("Send failed", { id: loadingToast });
+      console.log('Send error toast shown with ID:', loadingToast);
+    }
+  }, [isPending, isSuccess, hash]);
+
+  const handleSend = async () => {
     console.log('[Send] Initiating send transaction');
     
-    if (!amount || !recipientAddress) return;
+    if (!amount || !recipientAddress) {
+      toast.error("Invalid Input", {
+        description: "Please enter both amount and recipient address",
+      });
+      return;
+    }
 
     try {
       console.log('[Send] Attempting to execute send');
@@ -46,12 +73,12 @@ const Send = () => {
         chain: config.chains[0],
       });
       
-      console.log('[Send] Send toast notification shown');
+      console.log('[Send] Send transaction initiated');
     } catch (error) {
       console.error('[Send] Error during send:', error);
       toast({
         title: "Send failed",
-        description: "An error occurred during send.",
+        description: error instanceof Error ? error.message : "An error occurred during send.",
         variant: "destructive",
       });
     }
@@ -169,11 +196,14 @@ const Send = () => {
                 </div>
               )}
               <TransactionButton
-                onClick={handleSend}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleSend();
+                }}
                 hash={hash}
                 isConfirming={isConfirming}
                 isSuccess={isSuccess}
-                isPending={isPending}
+                isLoading={isPending}
                 action="Send"
               />
             </form>

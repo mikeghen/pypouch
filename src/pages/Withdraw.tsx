@@ -113,7 +113,7 @@ const Withdraw = () => {
                 hash={withdrawState.hash}
                 isConfirming={withdrawState.isConfirming}
                 isSuccess={withdrawState.isSuccess}
-                isPending={withdrawState.isPending}
+                isLoading={withdrawState.isPending}
                 action="Withdraw"
               />
             </form>

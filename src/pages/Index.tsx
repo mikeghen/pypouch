@@ -141,7 +141,7 @@ const Index = () => {
               hash={hash}
               isConfirming={isLoading}
               isSuccess={isSuccess}
-              isPending={isPending}
+              isLoading={isPending}
               action="Create PyPouch"
             />
           </Card>
