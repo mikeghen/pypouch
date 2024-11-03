@@ -76,10 +76,8 @@ const Send = () => {
       console.log('[Send] Send transaction initiated');
     } catch (error) {
       console.error('[Send] Error during send:', error);
-      toast({
-        title: "Send failed",
-        description: error instanceof Error ? error.message : "An error occurred during send.",
-        variant: "destructive",
+      toast.error("Send failed", {
+        description: error instanceof Error ? error.message : "An error occurred during send."
       });
     }
   };
@@ -99,10 +97,8 @@ const Send = () => {
 
   const handleError = (error: any) => {
     console.error(error);
-    toast({
-      title: "Scan failed",
-      description: "Failed to scan QR code.",
-      variant: "destructive",
+    toast.error("Scan failed", {
+      description: "Failed to scan QR code."
     });
   };
 
