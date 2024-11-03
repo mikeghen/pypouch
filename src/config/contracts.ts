@@ -1,5 +1,6 @@
 export const TOKEN_ADDRESS = import.meta.env.VITE_TOKEN_ADDRESS as `0x${string}`;
 export const ATOKEN_ADDRESS = import.meta.env.VITE_ATOKEN_ADDRESS as `0x${string}`;
+export const AAVE_LENDING_POOL_ADDRESS = import.meta.env.VITE_AAVE_LENDING_POOL_ADDRESS as `0x${string}`;
 
 // PYUSD Token Configuration
 export const tokenContractConfig = {
@@ -13,7 +14,7 @@ export const tokenContractConfig = {
 } as const;
 
 // PyPouchFactory Configuration
-export const PYPOUCH_FACTORY_ADDRESS = '0x9e42737Bc5FCEE35bcCe8B8F277F266C01a20817' as `0x${string}`;
+export const PYPOUCH_FACTORY_ADDRESS = import.meta.env.VITE_PYPOUCH_FACTORY_ADDRESS as `0x${string}`;
 
 export const pyPouchFactoryConfig = {
     address: PYPOUCH_FACTORY_ADDRESS,
@@ -49,7 +50,7 @@ export const pyPouchConfig = {
 } as const;
 
 export const aavePoolConfig = {
-    address: '0x87870bca3f3fd6335c3f4ce8392d69350b4fa4e2' as `0x${string}`,
+    address: AAVE_LENDING_POOL_ADDRESS,
     abi: [
         {
             "inputs": [

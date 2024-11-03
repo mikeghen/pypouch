@@ -38,7 +38,7 @@ const Send = () => {
     
     if (isPending) {
       console.log('Showing send pending toast');
-      loadingToast = toast.loading("Sending PYUSD...");
+      loadingToast = toast.loading(`Sending ${tokenSymbol}...`);
       console.log('Send pending toast ID:', loadingToast);
     } else {
       toast.dismiss(loadingToast);
@@ -53,7 +53,7 @@ const Send = () => {
       toast.error("Send failed", { id: loadingToast });
       console.log('Send error toast shown with ID:', loadingToast);
     }
-  }, [isPending, isSuccess, hash]);
+  }, [isPending, isSuccess, hash, tokenSymbol]);
 
   const handleSend = async () => {
     console.log('[Send] Initiating send transaction');
@@ -122,7 +122,7 @@ const Send = () => {
           </Button>
           
           <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-2">Send {tokenSymbol}</h2>
+            <h2 className="text-2xl font-bold mb-2">Send</h2>
             <div className="flex items-baseline mb-6">
               <p className="text-4xl font-bold">
                 {tokenBalance ? (
@@ -166,7 +166,7 @@ const Send = () => {
               </div>
               <div className="space-y-2">
                 <label htmlFor="amount" className="text-sm font-medium">
-                  Amount (PYUSD)
+                  Amount ({tokenSymbol})
                 </label>
                 <Input
                   id="amount"
@@ -184,7 +184,7 @@ const Send = () => {
                 >
                   <WalletIcon className="h-4 w-4 text-gray-400" />
                   <p className="text-sm text-gray-400">
-                    {tokenBalance ? `${Number(tokenBalance.formatted).toFixed(6)} PYUSD available` : '0.000000 PYUSD'}
+                    {tokenBalance ? `${Number(tokenBalance.formatted).toFixed(6)} ${tokenSymbol} available` : `0.000000 ${tokenSymbol}`}
                   </p>
                 </div>
               </div>

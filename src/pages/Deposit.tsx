@@ -10,11 +10,13 @@ import { usePyPouch } from '@/contexts/PyPouchContext';
 import { useBlockNumber } from 'wagmi';
 import { useEffect } from 'react';
 import { Header } from "@/components/Header";
+import { useTokenSymbols } from '@/hooks/useTokenSymbols';
 
 const Deposit = () => {
   const navigate = useNavigate();
   const apy = useAaveAPY();
   const { pyPouchAddress } = usePyPouch();
+  const { tokenSymbol, aTokenSymbol } = useTokenSymbols();
   const { data: pyusdBalance, refetch: refetchPYUSDBalance } = useBalance({
     address: pyPouchAddress!,
     token: ATOKEN_ADDRESS,
@@ -44,7 +46,7 @@ const Deposit = () => {
           </Button>
           
           <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-2">Deposit PYUSD</h2>
+            <h2 className="text-2xl font-bold mb-2">Deposit</h2>
             <div className="flex items-baseline mb-2">
               <p className="text-4xl font-bold">
                 {pyusdBalance ? (
@@ -58,7 +60,7 @@ const Deposit = () => {
                   '0.000000'
                 )}
               </p>
-              <span className="text-lg ml-1">aPYUSD</span>
+              <span className="text-lg ml-1">{aTokenSymbol}</span>
             </div>
             {apy && (
               <p className="text-sm text-green-600 mb-6">

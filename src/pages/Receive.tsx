@@ -6,15 +6,17 @@ import { useToast } from "@/components/ui/use-toast";
 import { QRCodeSVG } from "qrcode.react";
 import { CopyIcon, CheckIcon } from "lucide-react";
 import { useState } from "react";
-import { useAccount } from 'wagmi';
+import { useAccount, } from 'wagmi';
 import { WalletConnect } from "@/components/WalletConnect";
 import { Header } from "@/components/Header";
+import { useTokenSymbols } from "@/hooks/useTokenSymbols";
 
 const Receive = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
   const { address } = useAccount();
+  const { tokenSymbol } = useTokenSymbols();
 
   const handleCopy = async () => {
     console.log('[Receive] Attempting to copy address:', address);
@@ -60,16 +62,16 @@ const Receive = () => {
           </Button>
           
           <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-6">Receive PYUSD</h2>
+            <h2 className="text-2xl font-bold mb-6">Receive</h2>
             {!address ? (
               <div className="text-center space-y-4">
-                <p className="text-gray-600">Connect your wallet to receive PYUSD</p>
+                <p className="text-gray-600">Connect your wallet to receive {tokenSymbol}</p>
                 <WalletConnect />
               </div>
             ) : (
               <div className="space-y-6">
                 <p className="text-sm text-gray-600">
-                  Scan QR code or share your wallet address to receive PYUSD
+                  Scan QR code or share your wallet address to receive {tokenSymbol}
                 </p>
                 
                 <div className="flex justify-center p-4 bg-white rounded-lg">

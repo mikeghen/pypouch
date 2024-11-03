@@ -137,7 +137,7 @@ const Index = () => {
           <Card className="p-6">
             <h2 className="text-xl font-bold mb-4">Create Your PyPouch</h2>
             <p className="text-gray-600 mb-6">
-              Create your personal PyPouch to start earning yield on your PYUSD deposits through Aave.
+              Create your personal PyPouch to start earning yield on your {tokenSymbol} deposits through Aave.
             </p>
             <TransactionButton
               onClick={handleCreatePyPouch}
@@ -154,7 +154,7 @@ const Index = () => {
         {pyPouchAddress !== '0x000000000000000000000000000000000000000A' && (
           <Card className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Spending Account (PYUSD Wallet Balance) */}
+              {/* Spending Account (Token Wallet Balance) */}
               <div className="space-y-2">
                 <h3 className="text-sm font-medium text-gray-500">Spending</h3>
                 <div className="flex items-baseline">

@@ -19,6 +19,7 @@ const Withdraw = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [amount, setAmount] = useState('');
+  const { tokenSymbol, aTokenSymbol } = useTokenSymbols();
 
   const apy = useAaveAPY();
   const { pyPouchAddress } = usePyPouch();
@@ -49,8 +50,6 @@ const Withdraw = () => {
     }
   };
 
-  const { tokenSymbol, aTokenSymbol } = useTokenSymbols();
-
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-3xl mx-auto space-y-6">
@@ -66,7 +65,7 @@ const Withdraw = () => {
           </Button>
           
           <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-2">Withdraw {tokenSymbol}</h2>
+            <h2 className="text-2xl font-bold mb-2">Withdraw</h2>
             <div className="flex items-baseline mb-2">
               <p className="text-4xl font-bold">
                 {tokenBalance ? (
