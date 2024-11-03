@@ -55,9 +55,16 @@ export const TransactionTable = ({
               </TableCell>
               <TableCell className="whitespace-nowrap">{tx.type}</TableCell>
               <TableCell className={`text-right whitespace-nowrap ${
-                tx.amount.startsWith("+") ? "text-green-600" : "text-red-600"
+                tx.type === "Deposit" ? "text-gray-800" : tx.amount.startsWith("+") ? "text-green-600" : "text-red-600"
               }`}>
-                {tx.amount}
+                {tx.type === "Deposit" ? (
+                  <>
+                    <img src="logo.svg" alt="Logo" className="inline-block h-4 w-4 mr-1" />
+                    {tx.amount}
+                  </>
+                ) : (
+                  tx.amount
+                )}
               </TableCell>
               <TableCell>
                 {tx.hash && (

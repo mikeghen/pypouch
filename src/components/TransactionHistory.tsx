@@ -75,7 +75,7 @@ const TransactionHistory = () => {
             id: `${event.blockNumber}-${event.logIndex}`,
             date: new Date(Number(blocks[index].timestamp) * 1000),
             type,
-            amount: `${isIncoming || isEarned ? '+' : '-'}${amount}`,
+            amount: `${isDeposit ? '' : (isIncoming || isEarned ? '+' : '-')}${amount}`,
             from: event.args.from,
             to: event.args.to,
             hash: event.transactionHash
